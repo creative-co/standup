@@ -20,7 +20,7 @@ module Standup
   end
   
   def self.gem_scripts_path
-    File.expand_path('../../../scripts',  __FILE__)
+    File.expand_path('../../scripts',  __FILE__)
   end
   
   def self.local_scripts_path
