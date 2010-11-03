@@ -1,0 +1,5 @@
+require 'settingslogic'
+require 'AWS'
+require 'aws/s3'
+require 'net/ssh'
+require 'highline'
