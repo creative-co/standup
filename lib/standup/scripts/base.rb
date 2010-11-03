@@ -37,6 +37,15 @@ module Standup
         run
       end
       
+      def script_file filename
+        [local_scripts_path, gem_scripts_path].each do |dir|
+          next unless dir
+          path = File.expand_path("#{name}/#{filename}", dir)
+          return path if File.exists? path
+        end
+        nil
+      end
+      
       def run; end
     end
   end

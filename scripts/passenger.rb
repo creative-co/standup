@@ -9,11 +9,11 @@ Standup.script do
       sudo 'passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx'
     end
     
-    upload 'config/standup/passenger/nginx.conf',
+    upload script_file('nginx.conf'),
            :to =>'/opt/nginx/conf/nginx.conf',
            :sudo => true
     
-    upload 'config/standup/passenger/upstart.conf',
+    upload script_file('upstart.conf'),
            :to =>'/etc/init/nginx.conf',
            :sudo => true
     sudo 'initctl reload-configuration'

@@ -19,7 +19,7 @@ Standup.script do
     bootstrap_db
     
     remote_update '/opt/nginx/conf/nginx.conf',
-                  File.read('config/standup/webapp/nginx-server-fragment.conf'),
+                  File.read(script_file('nginx-server-fragment.conf')),
                   :delimiter => '# standup place server fragments here',
                   :sudo => true
     

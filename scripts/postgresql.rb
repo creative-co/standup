@@ -2,7 +2,7 @@ Standup.script do
   def run
     install_package 'postgresql-8.4 libpq-dev'
   
-    upload 'config/standup/postgresql/postgresql.conf',
+    upload script_file('postgresql.conf'),
            :to => '/etc/postgresql/8.4/main/postgresql.conf',
            :sudo => true
   
