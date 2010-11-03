@@ -1,8 +1,0 @@
-= Standup
-
-Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2.
-
-== Copyright
-
-Copyright (c) 2010 Ilia Ablamonov, Cloud Castle Inc.
-See LICENSE for details.
