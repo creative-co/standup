@@ -32,14 +32,13 @@ module Standup
       @@scripts = {}
       loaded = Set.new
       [local_scripts_path, gem_scripts_path].each do |dir|
-        next unless dir
         Dir.foreach dir do |name|
           next unless File.file? "#{dir}/#{name}"
           next unless name =~ /\.rb$/
           next if loaded.include? name
           load "#{dir}/#{name}", true
           loaded << name
-        end
+        end if dir && File.exists?(dir)
       end
     end
     @@scripts
