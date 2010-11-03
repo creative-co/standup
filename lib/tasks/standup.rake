@@ -11,6 +11,12 @@ task :standup do
 end
 
 namespace :standup do
+  desc "Generate config file"
+  task :create do
+    FileUtils.copy File.expand_path('../../../standup.yml',  __FILE__),
+                   File.expand_path('config',  Rails.root)
+  end
+  
   Standup.scripts.each do |name, _|
     desc "Run script #{name} for each node"
     task name.to_sym do
