@@ -27,6 +27,7 @@ Standup is an application deployment and infrastructure management tool for Rail
 ## Setup script
 
 Setup script is just common Rails application deployment workflow.
+
 If you just want to add your script into this workflow, just set it as script param, thus overwriting default.
 
 For example, if you want to add `rescue` to your configuration, you need to:
@@ -34,11 +35,11 @@ For example, if you want to add `rescue` to your configuration, you need to:
 0. Write that `rescue` script
 0. Change standup.yml like the following:
 
-    nodes:
-      main:
-        ...
-        setup:
-          ec2 basics ruby postgresql passenger rescue webapp update 
+        nodes:
+          main:
+            ...
+            setup:
+              ec2 basics ruby postgresql passenger rescue webapp update 
 
 ## Copyright
 
