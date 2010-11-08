@@ -2,7 +2,7 @@
 
 Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2.
 
-## Basic Usage
+## Basic usage
 
 0. Add `gem 'standup'` into Gemfile and install it via `> bundle install`
 0. `> rake standup:init`
@@ -40,6 +40,23 @@ For example, if you want to add `rescue` to your configuration, you need to:
             ...
             setup:
               ec2 basics ruby postgresql passenger rescue webapp update 
+
+## To do
+
+- Allow Rails environment specification other than production (make it param)
+
+- If there is more than one node in standup.yml, require node name(s) or `all` explicitly set:
+`rake standup:shell NODE=web`
+`rake standup:update NODES=db,web`
+`rake standup:setup NODES=all`
+
+- **?** Do not use rake at all, use thor or trollop:
+`standup shell web`
+`standup update db,web`
+`standup setup all`
+Probably this looks much more clear.
+
+- **?** Script sequences: rework default script as script sequence
 
 ## Copyright
 
