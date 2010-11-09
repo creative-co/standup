@@ -43,6 +43,11 @@ For example, if you want to add `rescue` to your configuration, you need to:
 
 ## To do
 
+- Redesign node:script running concept:
+`setup` script need to be run for each node
+`shell` script is meant to be run for one specific node
+`init` script does not relate to any node at all.
+
 - If there is more than one node in standup.yml, require node name(s) or `all` explicitly set:
 `standup shell web`
 `standup update db,web`
