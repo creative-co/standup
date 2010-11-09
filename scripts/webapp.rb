@@ -1,4 +1,8 @@
 Standup.script do
+  self.default_params = {
+      :rails_env => 'production'
+  }
+  
   def run
     install_package 'git-core'
     install_gem 'bundler'
@@ -56,8 +60,8 @@ Standup.script do
       
       in_dir '/opt/webapp' do
         sudo 'bundle install'
-        exec 'RAILS_ENV=production rake db:schema:load'
-        exec 'RAILS_ENV=production rake db:seed'
+        exec "RAILS_ENV=#{params.rails_env} rake db:schema:load"
+        exec "RAILS_ENV=#{params.rails_env} rake db:seed"
       end
     end
   end

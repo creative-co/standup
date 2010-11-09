@@ -43,8 +43,6 @@ For example, if you want to add `rescue` to your configuration, you need to:
 
 ## To do
 
-- Allow Rails environment specification other than production (make it param)
-
 - If there is more than one node in standup.yml, require node name(s) or `all` explicitly set:
 `standup shell web`
 `standup update db,web`
