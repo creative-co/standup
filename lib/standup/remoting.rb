@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module Standup
   class Remoting
     def initialize node
