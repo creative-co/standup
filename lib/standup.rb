@@ -1,3 +1,4 @@
+require 'active_support/all'
 require 'settingslogic'
 require 'AWS'
 require 'aws/s3'
@@ -5,7 +6,6 @@ require 'net/ssh'
 require 'highline'
 
 require 'standup/core_ext'
-require 'standup/railtie'
 require 'standup/settings'
 require 'standup/ec2'
 require 'standup/remoting'
@@ -24,7 +24,7 @@ module Standup
   end
   
   def self.local_scripts_path
-    File.expand_path('config/standup',  Rails.root) rescue nil
+    File.expand_path('config/standup') rescue nil
   end
   
   def self.scripts

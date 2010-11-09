@@ -5,14 +5,14 @@ Standup is an application deployment and infrastructure management tool for Rail
 ## Basic usage
 
 0. Add `gem 'standup'` into Gemfile and install it via `> bundle install`
-0. `> rake standup:init`
+0. `> standup init`
 0. Write actual settings in generated `config/standup.yml`
-0. `> rake standup:setup`
-0. `> rake standup:status`
+0. `> standup setup`
+0. `> standup status`
 
 ## Tweaking default scripts
 
-0. `> rake standup:localize SCRIPT=<script_name>`
+0. `> standup localize SCRIPT=<script_name>`
 0. Script file `config/standup/<script_name>.rb` will be copied from gem.
 0. Script's own files, like configs etc. under `config/standup/<script_name>`, if any,  will be copied from gem too. 
 0. You can edit them and standup will use them instead of default.
@@ -20,7 +20,7 @@ Standup is an application deployment and infrastructure management tool for Rail
 
 ## Creating new scripts
 
-0. `> rake standup:generate SCRIPT=<script_name>`
+0. `> standup generate SCRIPT=<script_name>`
 0. Script file `config/standup/<script_name>.rb` will be created with empty script stub.
 0. Edit it as you want, it's now available for standup.
 
@@ -46,15 +46,9 @@ For example, if you want to add `rescue` to your configuration, you need to:
 - Allow Rails environment specification other than production (make it param)
 
 - If there is more than one node in standup.yml, require node name(s) or `all` explicitly set:
-`rake standup:shell NODE=web`
-`rake standup:update NODES=db,web`
-`rake standup:setup NODES=all`
-
-- **?** Do not use rake at all, use thor or trollop:
 `standup shell web`
 `standup update db,web`
 `standup setup all`
-Probably this looks much more clear.
 
 - **?** Script sequences: rework default script as script sequence
 
