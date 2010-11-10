@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{standup}
-  s.version = "0.3.2"
+  s.version = "0.3.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Cloud Castle Inc."]
@@ -39,15 +39,22 @@ Gem::Specification.new do |s|
      "scripts/allocate_ip.rb",
      "scripts/appconsole.rb",
      "scripts/basics.rb",
+     "scripts/delayed_job.rb",
+     "scripts/delayed_job/delayed_job_monit.conf",
      "scripts/ec2.rb",
      "scripts/generate.rb",
      "scripts/generate/script.rb",
      "scripts/init.rb",
      "scripts/init/standup.yml",
      "scripts/localize.rb",
+     "scripts/monit.rb",
+     "scripts/monit/monit",
+     "scripts/monit/monitrc",
+     "scripts/monit/sshd.conf",
      "scripts/passenger.rb",
+     "scripts/passenger/nginx",
      "scripts/passenger/nginx.conf",
-     "scripts/passenger/upstart.conf",
+     "scripts/passenger/nginx_monit.conf",
      "scripts/postgresql.rb",
      "scripts/postgresql/postgresql.conf",
      "scripts/ruby.rb",

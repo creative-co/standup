@@ -1,0 +1,9 @@
+set daemon 60
+    with start delay 60
+
+set logfile /var/log/monit.log
+
+set httpd port 2812
+    allow localhost
+
+include /etc/monit/conf.d/*

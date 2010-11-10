@@ -10,6 +10,7 @@ Standup.script do
       sudo 'mkdir -p tmp'
       sudo 'chown -R nobody:nogroup /opt/webapp'
       sudo 'touch tmp/restart.txt'
+      scripts.delayed_job.restart if scripts.setup.has_script? 'delayed_job'
     end
   end
 end

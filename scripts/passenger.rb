@@ -13,19 +13,19 @@ Standup.script do
            :to =>'/opt/nginx/conf/nginx.conf',
            :sudo => true
     
-    upload script_file('upstart.conf'),
-           :to =>'/etc/init/nginx.conf',
+    upload script_file('nginx'),
+           :to =>'/etc/init.d/nginx',
            :sudo => true
-    sudo 'initctl reload-configuration'
+    
+    sudo 'chmod +x /etc/init.d/nginx'
+    sudo '/usr/sbin/update-rc.d -f nginx defaults'
+    
+    scripts.monit.add_watch script_file('nginx_monit.conf')
     
     restart_nginx
   end
   
   def restart_nginx
-    if exec('initctl status nginx') =~ /running/i
-      sudo 'initctl restart nginx'
-    else
-      sudo 'initctl start nginx'
-    end
+    scripts.monit.restart_watch 'nginx'
   end
 end
