@@ -115,7 +115,7 @@ module Standup
     
     def rsync source, destination, sudo
       command = [
-        'rsync -azP --delete',
+        'rsync -rlptDzP --delete',
         "-e 'ssh -i #{@keypair_file} -q -o StrictHostKeyChecking=no'",
         ("--rsync-path='sudo rsync'" if sudo),
         [*source].join(' '),
