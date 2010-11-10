@@ -3,14 +3,9 @@ require 'active_support/hash_with_indifferent_access'
 module Standup
   module Scripts
     class Base
-      def initialize node
-        @node = node
-        @remoting = nil
-        @params = if node.params[name].is_a? Hash
-          ActiveSupport::HashWithIndifferentAccess.new self.class.default_params.merge(node.params[name])
-        else
-          node.params[name] || self.class.default_params
-        end
+      def initialize *args
+        merge_params self.class.default_params
+        merge_params Settings[name]
       end
     
       class_attribute :name
@@ -20,21 +15,14 @@ module Standup
       
       class_attribute :description
       
-      delegate :instance, :open_port, :open_ports, :remoting, :scripts,
-               :to => :@node
-    
-      delegate :download, :upload, :remote_update, :exec, :sudo, :in_dir, :in_temp_dir, :file_exists?, :install_package, :install_packages, :install_gem,
-               :to => :remoting
-    
-      attr_accessor :node, :params
+      attr_accessor :params
       
       def name
         self.class.name
       end
       
-      def titled_run
-        bright_p "#{@node.name}:#{name}", HighLine::CYAN
-        run
+      def put_title
+        bright_p name, HighLine::CYAN
       end
       
       def script_file filename
@@ -46,7 +34,55 @@ module Standup
         nil
       end
       
-      def run; end
+      def self.execute
+        new.run
+      end
+      
+      protected
+      
+      def merge_params param_overrides
+        @params = if param_overrides.is_a? Hash
+          ActiveSupport::HashWithIndifferentAccess.new((@params || {}).merge(param_overrides))
+        else
+          param_overrides || @params
+        end
+      end
+      
+      def argument arg_pattern, arg_name = arg_pattern, variants = nil
+        self.class.argument arg_pattern, arg_name, variants
+      end
+
+      def self.argument arg_pattern, arg_name = arg_pattern, variants = nil
+        script_description = description
+        script_name = name
+        opt_parser = Trollop::Parser.new do
+          banner script_description
+          banner ''
+          banner 'Usage:'
+          banner "       standup #{script_name} [options] #{arg_pattern}"
+          banner ''
+          if variants
+            banner "where <#{arg_name}> is one of the following:"
+            banner ''
+            variants.each { |v| banner v }
+            banner ''
+          end
+          banner "and [options] are:"
+          banner ''
+
+          stop_on_unknown
+        end
+        Trollop::with_standard_exception_handling opt_parser do
+          opt_parser.parse ARGV
+          raise Trollop::HelpNeeded if ARGV.empty?
+        end
+        
+        result = ARGV.shift
+        if variants && !variants.include?(result)
+          opt_parser.die "unknown #{arg_name} #{result}", nil
+        end
+        result
+      end
     end
   end
 end

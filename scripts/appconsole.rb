@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   self.description = 'Run remote Rails application console'
   
   def run

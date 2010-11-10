@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   self.description = 'Watch remote Rails application log'
   
   def run

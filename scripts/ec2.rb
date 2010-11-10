@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   def run
     ensure_security_group
       

@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :local do
   self.description = 'Request new Elasics IP to use in node config'
   
   def run

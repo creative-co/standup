@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   def run
     scripts.monit.add_watch script_file('delayed_job_monit.conf')
   end

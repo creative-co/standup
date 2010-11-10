@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   def run
     return if exec('ruby -v') =~ /Ruby Enterprise Edition 2010.02/
     

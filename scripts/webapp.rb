@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   self.default_params = {
       :rails_env => 'production'
   }

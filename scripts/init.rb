@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :local do
   self.description = 'Generate config file'
   
   def run

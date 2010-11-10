@@ -8,14 +8,14 @@ opt_parser = Trollop::Parser.new do
   banner 'Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2.'
   banner ''
   banner 'Usage:'
-  banner '       standup script [options]'
+  banner '       standup [options] <script> [script arguments]'
   banner ''
-  banner 'where script is one of the following:'
+  banner 'where <script> is one of the following:'
   banner ''
   
   offset = Standup.scripts.keys.map(&:length).max + 2
-  Standup.scripts.each do |name, script|
-    banner "#{"%-#{offset}s" % name} #{script.description}"
+  Standup.scripts.keys.sort.each do |name|
+    banner "#{"%-#{offset}s" % name} #{Standup.scripts[name].description}"
   end
   
   banner ''
@@ -33,9 +33,10 @@ end
 exit if ARGV.empty?
 
 script_name = ARGV.shift
+script = Standup.scripts[script_name]
 
-if Standup.scripts.include? script_name
-  Standup.nodes.each {|node| node.run_script script_name}
+if script
+  script.execute
 else
   opt_parser.die "unknown script #{script_name}", nil
 end

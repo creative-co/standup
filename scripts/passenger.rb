@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   def run
     scripts.ec2.open_port 80
     

@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   self.description = 'Terminate nodes'
   
   def run

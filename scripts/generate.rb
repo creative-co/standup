@@ -1,14 +1,11 @@
-Standup.script do
+Standup.script :local do
   self.description = 'Generate script'
   
   def run
-    unless ENV['SCRIPT']
-      bright_p "Specify script name with SCRIPT=name argument"
-      return
-    end
+    script_name = argument '<script name>'
     
     FileUtils.mkdir_p(Standup.local_scripts_path)
     FileUtils.copy script_file('script.rb'),
-                   File.expand_path("#{ENV['SCRIPT']}.rb",  Standup.local_scripts_path)
+                   File.expand_path("#{script_name}.rb",  Standup.local_scripts_path)
   end
 end

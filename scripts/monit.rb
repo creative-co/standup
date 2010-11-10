@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   def run
     install_package 'monit'
     

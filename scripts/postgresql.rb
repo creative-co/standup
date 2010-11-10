@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   def run
     install_package 'postgresql-8.4 libpq-dev'
   

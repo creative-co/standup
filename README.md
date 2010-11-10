@@ -4,15 +4,16 @@ Standup is an application deployment and infrastructure management tool for Rail
 
 ## Basic usage
 
-0. Add `gem 'standup'` into Gemfile and install it via `> bundle install`
-0. `> standup init`
-0. Write actual settings in generated `config/standup.yml`
-0. `> standup setup`
-0. `> standup status`
+0. `gem install standup`
+0. `cd path/to/your/rails/project`
+0. `standup init`
+0. Fill in actual settings in generated file `config/standup.yml`
+0. `standup setup`
+0. `standup status`
 
 ## Tweaking default scripts
 
-0. `> standup localize SCRIPT=<script_name>`
+0. `standup localize <script_name>`
 0. Script file `config/standup/<script_name>.rb` will be copied from gem.
 0. Script's own files, like configs etc. under `config/standup/<script_name>`, if any,  will be copied from gem too. 
 0. You can edit them and standup will use them instead of default.
@@ -20,7 +21,7 @@ Standup is an application deployment and infrastructure management tool for Rail
 
 ## Creating new scripts
 
-0. `> standup generate SCRIPT=<script_name>`
+0. `standup generate <script_name>`
 0. Script file `config/standup/<script_name>.rb` will be created with empty script stub.
 0. Edit it as you want, it's now available for standup.
 
@@ -43,17 +44,11 @@ For example, if you want to add `rescue` to your configuration, you need to:
 
 ## To do
 
-- Redesign node:script running concept:
-`setup` script need to be run for each node
-`shell` script is meant to be run for one specific node
-`init` script does not relate to any node at all.
-
-- If there is more than one node in standup.yml, require node name(s) or `all` explicitly set:
-`standup shell web`
-`standup update db,web`
-`standup setup all`
+- `standup -v`
 
 - **?** Script sequences: rework default script as script sequence
+
+- ERB processing for script files
 
 ## Copyright
 

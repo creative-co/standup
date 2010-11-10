@@ -1,4 +1,4 @@
-Standup.script do
+Standup.script :node do
   self.description = 'Put description here'
   
   def run

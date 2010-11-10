@@ -13,7 +13,8 @@ module Standup
     attr_reader :name, :scripts
     
     def run_script script_name
-      scripts[script_name].titled_run
+      scripts[script_name].put_title
+      scripts[script_name].run
       close_remoting
     end
     

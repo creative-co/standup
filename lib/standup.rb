@@ -10,6 +10,7 @@ require 'standup/settings'
 require 'standup/ec2'
 require 'standup/remoting'
 require 'standup/scripts/base'
+require 'standup/scripts/node'
 require 'standup/node'
 
 module Standup
@@ -44,9 +45,17 @@ module Standup
     @@scripts
   end
   
-  def self.script &block
+  def self.script type = :node, &block
     name = block.__file__.match(/([^\/]*)\.rb$/)[1]
-    script_class = Class.new(Standup::Scripts::Base, &block)
+    superclass = case type
+      when :node
+        Scripts::Node
+      when :local
+        Scripts::Base
+      else
+        raise ArgumentError, "Unknown script type #{type}"
+    end
+    script_class = Class.new(superclass, &block)
     script_class.name = name
     Standup::Scripts.const_set name.camelize, script_class
     scripts[name] = script_class
