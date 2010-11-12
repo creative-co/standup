@@ -60,4 +60,8 @@ module Standup
     Standup::Scripts.const_set name.camelize, script_class
     scripts[name] = script_class
   end
+  
+  def self.version
+    File.read(File.expand_path('../../VERSION',  __FILE__)).strip
+  end
 end

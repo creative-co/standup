@@ -5,6 +5,8 @@ require 'trollop'
 require 'standup'
 
 opt_parser = Trollop::Parser.new do
+  version "Standup #{Standup.version} (c) 2010 Ilia Ablamonov, Cloud Castle" # "test 1.2.3 (c) 2008 William Morgan"
+  
   banner 'Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2.'
   banner ''
   banner 'Usage:'
