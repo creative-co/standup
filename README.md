@@ -44,8 +44,6 @@ For example, if you want to add `rescue` to your configuration, you need to:
 
 ## To do
 
-- `standup -v`
-
 - **?** Script sequences: rework default script as script sequence
 
 - ERB processing for script files

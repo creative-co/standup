@@ -32,8 +32,6 @@ Trollop::with_standard_exception_handling opt_parser do
  raise Trollop::HelpNeeded if ARGV.empty?
 end
 
-exit if ARGV.empty?
-
 script_name = ARGV.shift
 script = Standup.scripts[script_name]
 
