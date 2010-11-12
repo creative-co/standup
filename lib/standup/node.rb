@@ -1,3 +1,5 @@
+require 'active_support/hash_with_indifferent_access'
+
 module Standup
   class Node
     def initialize name
@@ -28,7 +30,7 @@ module Standup
     end
     
     def params
-      Settings.nodes[@name]
+      Settings.nodes[@name] || ActiveSupport::HashWithIndifferentAccess.new
     end
     
     def remoting
