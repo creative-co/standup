@@ -1,3 +1,4 @@
+# Amazon Web Services credentials
 aws:
   account_id: 
   access_key_id: 
@@ -5,13 +6,17 @@ aws:
   keypair_name: 
   availability_zone: us-east-1a
 
+# Global script params
+ec2:
+  image_id: ami-480df921 # Canonical Ubuntu 10.04, EBS boot, i386
+  instance_type: m1.small
+  ssh_user: ubuntu
+webapp:
+  github_user: 
+  github_repo: 
+
+# Nodes and their script params
 nodes:
   main:
     ec2:
-      image_id: ami-480df921 # Canonical Ubuntu 10.04, EBS boot
-      instance_type: m1.small
-      ssh_user: ubuntu
-      # elastic_ip: 
-    webapp:
-      github_user: 
-      github_repo: 
+      elastic_ip:
