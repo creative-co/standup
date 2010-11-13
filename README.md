@@ -90,8 +90,6 @@ For example, if you want to add `rescue` to your configuration, you need to:
 
 - **?** Script sequences: rework default script as script sequence
 
-- ERB processing for script files
-
 ## Copyright
 
 Copyright (c) 2010 Ilia Ablamonov, Cloud Castle Inc.

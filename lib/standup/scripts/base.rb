@@ -34,6 +34,17 @@ module Standup
         nil
       end
       
+      def with_processed_file filename
+        Dir.mktmpdir do |dir|
+          erb = ERB.new File.read(filename)
+          erb.filename = filename
+          result = erb.result get_binding
+          tmp_filename = File.expand_path File.basename(filename), dir 
+          File.open(tmp_filename, 'w') {|f| f.write result}
+          yield tmp_filename
+        end
+      end
+      
       def self.execute
         new.run
       end
@@ -82,6 +93,10 @@ module Standup
           opt_parser.die "unknown #{arg_name} #{result}", nil
         end
         result
+      end
+      
+      def get_binding
+        binding
       end
     end
   end
