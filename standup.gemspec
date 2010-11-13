@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{standup}
-  s.version = "0.3.5"
+  s.version = "0.3.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Cloud Castle Inc."]
-  s.date = %q{2010-11-12}
+  s.date = %q{2010-11-13}
   s.default_executable = %q{standup}
   s.email = %q{ilia@flamefork.ru}
   s.executables = ["standup"]
@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
      "scripts/allocate_ip.rb",
      "scripts/appconsole.rb",
      "scripts/basics.rb",
+     "scripts/browse.rb",
      "scripts/delayed_job.rb",
      "scripts/delayed_job/delayed_job_monit.conf",
      "scripts/ec2.rb",
@@ -66,7 +67,7 @@ Gem::Specification.new do |s|
      "scripts/update.rb",
      "scripts/watchlog.rb",
      "scripts/webapp.rb",
-     "scripts/webapp/nginx-server-fragment.conf",
+     "scripts/webapp/webapp.conf",
      "standup.gemspec"
   ]
   s.homepage = %q{http://github.com/Flamefork/standup}
