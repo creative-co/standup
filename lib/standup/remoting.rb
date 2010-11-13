@@ -6,7 +6,7 @@ module Standup
       @node = node
       @host = @node.instance.external_ip
       @keypair_file = Settings.aws.keypair_file
-      @user = @node.params.ec2.ssh_user
+      @user = @node.scripts.ec2.params.ssh_user
       @ssh = nil
       @path = nil
     end
