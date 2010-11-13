@@ -24,7 +24,9 @@ Standup.script :node do
 
     sudo 'chown -R nobody:nogroup /opt/webapp'
     
-    scripts.passenger.add_server_conf script_file('webapp.conf')
+    with_processed_file script_file('webapp.conf') do |file|
+      scripts.passenger.add_server_conf file
+    end
   end
   
   protected
