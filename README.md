@@ -61,7 +61,7 @@ Script params are merged in `node-specific || global || script-defaults` manner.
 0. Script file `config/standup/<script_name>.rb` will be copied from gem.
 0. Script's own files, like configs etc. under `config/standup/<script_name>`, if any, will be copied from gem too. 
 0. You can edit them and standup will use them instead of default.
-0. You can delete local script's own files, then default ones will be used. 
+0. You can delete local script file or its own files, then default ones will be used. 
 
 ## Creating new scripts
 
