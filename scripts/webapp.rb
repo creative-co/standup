@@ -21,15 +21,10 @@ Standup.script :node do
     end
 
     bootstrap_db
-    
-    remote_update '/opt/nginx/conf/nginx.conf',
-                  File.read(script_file('nginx-server-fragment.conf')),
-                  :delimiter => '# standup place server fragments here',
-                  :sudo => true
-    
+
     sudo 'chown -R nobody:nogroup /opt/webapp'
     
-    scripts.passenger.restart_nginx
+    scripts.passenger.add_server_conf script_file('webapp.conf')
   end
   
   protected

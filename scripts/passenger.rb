@@ -9,6 +9,8 @@ Standup.script :node do
       sudo 'passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx'
     end
     
+    sudo 'mkdir -p /opt/nginx/conf/servers'
+    
     upload script_file('nginx.conf'),
            :to =>'/opt/nginx/conf/nginx.conf',
            :sudo => true
@@ -23,6 +25,14 @@ Standup.script :node do
     scripts.monit.add_watch script_file('nginx_monit.conf')
     
     restart_nginx
+  end
+  
+  def add_server_conf file, name = File.basename(file), restart = true
+    upload file,
+           :to   => "/opt/nginx/conf/servers/#{name}",
+           :sudo => true
+    
+    restart_nginx if restart
   end
   
   def restart_nginx
