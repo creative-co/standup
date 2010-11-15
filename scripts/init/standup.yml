@@ -12,6 +12,7 @@ ec2:
   instance_type: m1.small
   ssh_user: ubuntu
 webapp:
+  name: 
   github_user: 
   github_repo: 
 

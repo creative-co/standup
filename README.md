@@ -35,10 +35,12 @@ You can override this behavior by specifying `keypair_file` param.
       instance_type: m1.small
       ssh_user: ubuntu
     webapp:
+      name: superproject
       github_user: supercoder
       github_repo: superproject
 
 Major part of script params can be set here.
+In `webapp` script `name` param is used for database name and application path.
 
 ### Nodes and their script params
 

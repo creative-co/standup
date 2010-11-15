@@ -1,6 +1,8 @@
 Standup.script :node do
   def run
-    scripts.monit.add_watch script_file('delayed_job_monit.conf')
+    with_processed_file script_file('delayed_job_monit.conf') do |file|
+      scripts.monit.add_watch file
+    end
   end
   
   def restart

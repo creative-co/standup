@@ -1,32 +1,41 @@
 Standup.script :node do
   self.default_params = {
-      :rails_env => 'production'
+      :rails_env => 'production',
+      :name => 'webapp'
   }
   
   def run
     install_package 'git-core'
     install_gem 'bundler'
     
-    unless file_exists? '/opt/webapp'
-      sudo 'mkdir -p /opt/webapp'
+    unless file_exists? scripts.webapp.app_path
+      sudo "mkdir -p #{scripts.webapp.app_path}"
     end
     
-    sudo 'chown -R ubuntu:ubuntu /opt/webapp'
+    sudo "chown -R ubuntu:ubuntu #{scripts.webapp.app_path}"
     
     ensure_github_access
     
-    unless file_exists? '/opt/webapp/.git'
-      exec 'rm -rf /opt/webapp/*'
-      exec "git clone git@github.com:#{params.github_user}/#{params.github_repo}.git /opt/webapp"
+    unless file_exists? "#{scripts.webapp.app_path}/.git"
+      exec "rm -rf #{scripts.webapp.app_path}/*"
+      exec "git clone git@github.com:#{params.github_user}/#{params.github_repo}.git #{scripts.webapp.app_path}"
     end
 
     bootstrap_db
 
-    sudo 'chown -R nobody:nogroup /opt/webapp'
+    sudo "chown -R nobody:nogroup #{scripts.webapp.app_path}"
     
     with_processed_file script_file('webapp.conf') do |file|
-      scripts.passenger.add_server_conf file
+      scripts.passenger.add_server_conf file, "#{params.name}.conf"
     end
+  end
+  
+  def app_path
+    "/opt/#{params.name}"
+  end
+  
+  def db_name
+    "#{params.name}_#{params.rails_env}"
   end
   
   protected
@@ -52,10 +61,10 @@ Standup.script :node do
       scripts.postgresql.exec_sql "create user webapp with password 'webapp'"
     end
     
-    unless scripts.postgresql.exec_sql("select * from pg_database where datname = 'webapp'") =~ /1 row/
-      scripts.postgresql.exec_sql "create database webapp with owner webapp"
+    unless scripts.postgresql.exec_sql("select * from pg_database where datname = '#{db_name}'") =~ /1 row/
+      scripts.postgresql.exec_sql "create database #{db_name} with owner webapp"
       
-      in_dir '/opt/webapp' do
+      in_dir scripts.webapp.app_path do
         sudo 'bundle install'
         exec "RAILS_ENV=#{params.rails_env} rake db:schema:load"
         exec "RAILS_ENV=#{params.rails_env} rake db:seed"
