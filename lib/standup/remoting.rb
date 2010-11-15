@@ -51,7 +51,7 @@ module Standup
       raise ArgumentError, 'Only absolute paths allowed' unless path[0,1] == '/'
       old_path = @path
       @path = path
-      result = yield
+      result = yield path
       @path = old_path
       result
     end
