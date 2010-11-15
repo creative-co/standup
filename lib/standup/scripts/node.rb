@@ -11,7 +11,7 @@ module Standup
       delegate :instance, :open_port, :open_ports, :remoting, :scripts,
                :to => :@node
     
-      delegate :download, :upload, :remote_update, :exec, :sudo, :in_dir, :in_temp_dir, :file_exists?, :install_package, :install_packages, :install_gem,
+      delegate :download, :upload, :remote_update, :exec, :sudo, :su_exec, :in_dir, :in_temp_dir, :file_exists?, :install_package, :install_packages, :install_gem,
                :to => :remoting
     
       attr_accessor :node

@@ -48,12 +48,12 @@ Standup.script :node do
   end
   
   def bootstrap_db
-    unless run_pg_command("select * from pg_user where usename = 'webapp'") =~ /1 row/
-      run_pg_command "create user webapp with password 'webapp'"
+    unless scripts.postgresql.exec_sql("select * from pg_user where usename = 'webapp'") =~ /1 row/
+      scripts.postgresql.exec_sql "create user webapp with password 'webapp'"
     end
     
-    unless run_pg_command("select * from pg_database where datname = 'webapp'") =~ /1 row/
-      run_pg_command "create database webapp with owner webapp"
+    unless scripts.postgresql.exec_sql("select * from pg_database where datname = 'webapp'") =~ /1 row/
+      scripts.postgresql.exec_sql "create database webapp with owner webapp"
       
       in_dir '/opt/webapp' do
         sudo 'bundle install'
@@ -61,10 +61,6 @@ Standup.script :node do
         exec "RAILS_ENV=#{params.rails_env} rake db:seed"
       end
     end
-  end
-  
-  def run_pg_command cmd
-    sudo("su -c \"psql -c \\\"#{cmd}\\\"\" postgres")
   end
   
   def github_add_deploy_key user, password, repo, title, key

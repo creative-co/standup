@@ -11,6 +11,12 @@ Standup.script :node do
     sudo 'service postgresql-8.4 restart'
   end
   
+  def exec_sql command
+    su_exec 'postgres', "psql -c \"#{command}\""
+  end
+  
+  protected
+  
   def tune_kernel
     sysctl_params = ['kernel.shmmax=134217728', 'kernel.shmall=2097152']
   

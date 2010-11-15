@@ -71,6 +71,10 @@ module Standup
       exec "sudo #{command}"
     end
       
+    def su_exec user, command
+      sudo "su -c \"#{command.gsub /"/, '\"'}\" #{user}"
+    end
+      
     def in_temp_dir &block
       tmp_dirname = "/tmp/standup_tmp_#{rand 10000}"
       exec "mkdir #{tmp_dirname}"
