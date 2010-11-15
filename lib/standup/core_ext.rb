@@ -8,4 +8,9 @@ module Kernel
     bright_p message, HighLine::GREEN
     HighLine.new.ask('') {|q| q.echo = echo}
   end
+  
+  def local_exec command
+    bright_p command
+    `#{command}`
+  end
 end
