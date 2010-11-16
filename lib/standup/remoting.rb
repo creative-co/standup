@@ -112,12 +112,12 @@ module Standup
       raise ArgumentError, ":section option is required" unless opts[:section]
       user = opts[:user] || @node.scripts.ec2.params.ssh_user
       commands = commands.strip.split("\n") if commands.is_a? String
-      commands = commands.map(&:strip).join(' && ')
+      commands = commands.map(&:strip).join(' && ').gsub(/%/, '\%')
     
       in_temp_dir do |dir|
         sudo "crontab -l -u #{user} > crontab.txt"
         remote_update "#{dir}/crontab.txt",
-                      "#{schedule} #{commands} > /var/log/cron.log 2>&1\n",
+                      "#{schedule} (date && #{commands}) >> /var/log/cron.log 2>&1\n",
                       :delimiter => "# standup update_cron: #{opts[:section]}",
                       :sudo => true
         sudo "crontab -u #{user} - < crontab.txt"

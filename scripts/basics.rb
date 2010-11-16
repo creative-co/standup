@@ -7,5 +7,8 @@ Standup.script :node do
       upload file,
              :to => "/home/#{scripts.ec2.params.ssh_user}/.s3cfg"
     end
+    
+    sudo 'touch /var/log/cron.log'
+    sudo 'chmod 666 /var/log/cron.log'
   end
 end
