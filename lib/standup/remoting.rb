@@ -77,7 +77,7 @@ module Standup
       
     def in_temp_dir &block
       tmp_dirname = "/tmp/standup_tmp_#{rand 10000}"
-      exec "mkdir #{tmp_dirname}"
+      exec "mkdir -m 777 #{tmp_dirname}"
       result = in_dir tmp_dirname, &block
       exec "rm -rf #{tmp_dirname}"
       result

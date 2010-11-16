@@ -3,7 +3,6 @@ Standup.script :node do
   
   def run
     in_temp_dir do |dir|
-      exec 'chmod 777 .'
       su_exec 'postgres', "pg_dump -c #{scripts.webapp.db_name} > dump.sql"
       local_exec "mkdir -p tmp/db"
       download "#{dir}/dump.sql",
