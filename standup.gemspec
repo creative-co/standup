@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{standup}
-  s.version = "0.3.8"
+  s.version = "0.3.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Cloud Castle Inc."]
-  s.date = %q{2010-11-15}
+  s.date = %q{2010-11-16}
   s.default_executable = %q{standup}
   s.email = %q{ilia@flamefork.ru}
   s.executables = ["standup"]
@@ -40,7 +40,9 @@ Gem::Specification.new do |s|
      "scripts/allocate_ip.rb",
      "scripts/appconsole.rb",
      "scripts/basics.rb",
+     "scripts/basics/s3cfg",
      "scripts/browse.rb",
+     "scripts/db_backup.rb",
      "scripts/delayed_job.rb",
      "scripts/delayed_job/delayed_job_monit.conf",
      "scripts/download_db.rb",
