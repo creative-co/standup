@@ -23,22 +23,27 @@ module Standup
     
     def remote_update file, body, opts = {}
       tmpfile = Tempfile.new('file')
-  
-      download file,
-               :to => tmpfile.path,
-               :sudo => opts[:sudo]
+
+      success = download file,
+                         :to => tmpfile.path,
+                         :sudo => opts[:sudo]
+      unless success 
+        bright_p 'error during file upload'
+        return
+      end
   
       opts[:delimiter] ||= '# standup remote_update fragment'
       
       initial = File.read(tmpfile.path)
       
-      if initial.empty?
-        bright_p "error during file upload. skipping", Highline::RED
-        return
-      end
-      
       to_change = "#{opts[:delimiter]}\n#{body}#{opts[:delimiter]}\n"
-      changed = initial.gsub /#{opts[:delimiter]}.*#{opts[:delimiter]}\n?/m, to_change
+      pattern = /#{opts[:delimiter]}.*#{opts[:delimiter]}\n?/m
+      
+      changed = if initial.match pattern
+        initial.gsub pattern, to_change
+      else
+        "#{initial}\n#{to_change}"
+      end
       
       File.open(tmpfile.path, 'w') {|f| f.write changed}
       
@@ -128,8 +133,9 @@ module Standup
       
       3.times do
         bright_p command
-        break if system command
+        return true if system command
       end
+      false
     end
     
     def wrap_to_remote files
