@@ -1,6 +1,4 @@
 Standup.script :node do
-  self.description = 'Rails application database periodic backup to S3'
-  
   def run
     exec "s3cmd mb #{bucket}"
     
