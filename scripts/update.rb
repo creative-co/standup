@@ -8,7 +8,7 @@ Standup.script :node do
       sudo 'bundle install'
       sudo "RAILS_ENV=#{scripts.webapp.params.rails_env} rake db:migrate"
       sudo 'mkdir -p tmp'
-      sudo 'chown -R nobody:nogroup .'
+      sudo 'chown -R www-data:www-data .'
       sudo 'touch tmp/restart.txt'
       scripts.delayed_job.restart if scripts.setup.has_script? 'delayed_job'
     end

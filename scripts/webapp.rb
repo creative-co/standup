@@ -23,7 +23,7 @@ Standup.script :node do
 
     bootstrap_db
 
-    sudo "chown -R nobody:nogroup #{scripts.webapp.app_path}"
+    sudo "chown -R www-data:www-data #{scripts.webapp.app_path}"
     
     with_processed_file script_file('webapp.conf') do |file|
       scripts.passenger.add_server_conf file, "#{params.name}.conf"
