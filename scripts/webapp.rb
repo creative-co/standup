@@ -38,6 +38,12 @@ Standup.script :node do
     "#{params.name}_#{params.rails_env}"
   end
   
+  def db
+    return scripts.postgresql if scripts.setup.has_script? 'postgresql'
+    return scripts.mysql if scripts.setup.has_script? 'mysql'
+    nil
+  end
+  
   protected
   
   def ensure_github_access
@@ -57,13 +63,8 @@ Standup.script :node do
   end
   
   def bootstrap_db
-    unless scripts.postgresql.exec_sql("select * from pg_user where usename = 'webapp'") =~ /1 row/
-      scripts.postgresql.exec_sql "create user webapp with password 'webapp'"
-    end
-    
-    unless scripts.postgresql.exec_sql("select * from pg_database where datname = '#{db_name}'") =~ /1 row/
-      scripts.postgresql.exec_sql "create database #{db_name} with owner webapp"
-      
+    db.create_user 'webapp', 'webapp'
+    if db.create_database db_name, 'webapp'
       in_dir scripts.webapp.app_path do
         sudo 'bundle install'
         exec "RAILS_ENV=#{params.rails_env} rake db:schema:load"
