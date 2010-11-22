@@ -92,9 +92,9 @@ module Standup
       exec("if [ -e #{path} ]; then echo 'true'; fi") == "true\n"
     end
       
-    def install_packages *packages
-      packages = [*packages].flatten.join(' ')
-      sudo "apt-get -qqy install #{packages}"
+    def install_packages packages, opts = {}
+      input = opts[:input] ? "echo \"#{opts[:input].join("\n")}\" | sudo " : ''
+      sudo "#{input}apt-get -qqy install #{packages}"
     end
     alias :install_package :install_packages
       
