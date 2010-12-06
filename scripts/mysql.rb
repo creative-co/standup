@@ -29,11 +29,12 @@ Standup.script :node do
     end
   end
   
-  def dump_command database, username, password
+  def dump_command database, username = 'root', password = 'root'
     "mysqldump -u#{username} -p#{password} --compact -e --create-options --add-drop-table #{database}"
   end
   
-  def load_command database, username, password
+  def load_command database, username = 'root', password = 'root'
+    username = 'root' if username == :local
     "mysql -u#{username} -p#{password} #{database}"
   end
 end

@@ -33,12 +33,16 @@ Standup.script :node do
     end
   end
   
-  def dump_command database, username, password
+  def dump_command database, username = 'postgres', *args
     "sudo su -c \"pg_dump -c #{database}\" #{username}"
   end
   
-  def load_command database, username, password
-    "sudo su -c \"psql #{database}\" #{username}"
+  def load_command database, username = 'postgres', *args
+    if username == :local
+      "psql #{database}"
+    else
+      "sudo su -c \"psql #{database}\" #{username}"
+    end
   end
   
   protected

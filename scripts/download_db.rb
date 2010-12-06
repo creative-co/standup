@@ -3,7 +3,7 @@ Standup.script :node do
   
   def run
     in_temp_dir do |dir|
-      exec "#{scripts.webapp.db.dump_command scripts.webapp.db_name, 'webapp', 'webapp'} > dump.sql"
+      exec "#{scripts.webapp.db.dump_command scripts.webapp.db_name} > dump.sql"
       local_exec "mkdir -p tmp/db"
       download "#{dir}/dump.sql",
                :to => 'tmp/db/dump.sql',
@@ -13,7 +13,7 @@ Standup.script :node do
     create_user 'webapp', 'webapp'
     create_database scripts.webapp.db_name, 'webapp'
     
-    local_exec "#{scripts.webapp.db.load_command scripts.webapp.db_name, 'webapp', 'webapp'} < tmp/db/dump.sql"
+    local_exec "#{scripts.webapp.db.load_command scripts.webapp.db_name} < tmp/db/dump.sql"
   end
   
   def create_user name, password
