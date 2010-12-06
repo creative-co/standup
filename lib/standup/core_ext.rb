@@ -10,6 +10,6 @@ module Kernel
   
   def local_exec command
     bright_p command
-    `#{command}`
+    `#{command} 2>&1`.tap{|result| puts result}
   end
 end
