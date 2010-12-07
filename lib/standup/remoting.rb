@@ -77,7 +77,7 @@ module Standup
     end
       
     def su_exec user, command
-      sudo "su -c \"#{command.gsub /"/, '\"'}\" #{user}"
+      sudo "-u #{user} \"#{command.gsub /"/, '\"'}\""
     end
       
     def in_temp_dir &block
@@ -102,10 +102,13 @@ module Standup
       if version
         unless exec("gem list | grep #{name}").try(:[], version)
           sudo "gem install #{name} -v #{version} --no-ri --no-rdoc"
+          return true
         end
       else
         sudo "gem install #{name} --no-ri --no-rdoc"
+        return true
       end
+      false
     end
     
     def update_cron schedule, commands, opts = {}
