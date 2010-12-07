@@ -39,6 +39,8 @@ Standup.script :node do
                                          [Standup::EC2::SecurityGroup.list[node.id_group]]
     puts "waiting until it's up"
     inst.wait_until {inst.state != :running}
+    puts "and a bit more to let it really up"
+    sleep 20
   end
   
   def configure_elastic_ip
