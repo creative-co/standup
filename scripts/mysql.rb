@@ -6,25 +6,20 @@ Standup.script :node do
     # todo: tune performance
   end
   
-  def exec_sql sql
-    exec "mysql -uroot -proot -e \"#{sql}\""
-  end
-  
-  def create_user name, password
-    if exec_sql("select user from mysql.user where user = '#{name}'").present?
-      false
+  def exec_sql sql, local = false
+    command = "mysql -uroot -proot -e \"#{sql}\""
+    if local
+      local_exec command
     else
-      exec_sql "create user '#{name}'@'localhost' identified by '#{password}'"
-      true
+      exec command
     end
   end
   
-  def create_database name, owner
-    if exec_sql("show databases like '#{name}'").present?
+  def create_database name, local = false
+    if exec_sql("show databases like '#{name}'", local).present?
       false
     else
-      exec_sql "create database #{name}"
-      exec_sql "grant all on #{name}.* to '#{owner}'@'localhost'"
+      exec_sql "create database #{name}", local
       true
     end
   end

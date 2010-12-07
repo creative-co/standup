@@ -63,8 +63,7 @@ Standup.script :node do
   end
   
   def bootstrap_db
-    db.create_user 'webapp', 'webapp'
-    if db.create_database db_name, 'webapp'
+    if db.create_database db_name
       in_dir scripts.webapp.app_path do
         sudo 'bundle install'
         exec "RAILS_ENV=#{params.rails_env} rake db:schema:load"
