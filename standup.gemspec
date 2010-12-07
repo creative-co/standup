@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{standup}
-  s.version = "0.3.10"
+  s.version = "0.3.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Cloud Castle Inc."]
-  s.date = %q{2010-12-06}
+  s.date = %q{2010-12-07}
   s.default_executable = %q{standup}
   s.email = %q{ilia@flamefork.ru}
   s.executables = ["standup"]
@@ -62,6 +62,7 @@ Gem::Specification.new do |s|
      "scripts/passenger/nginx.conf",
      "scripts/passenger/nginx_monit.conf",
      "scripts/postgresql.rb",
+     "scripts/postgresql/pg_hba.conf",
      "scripts/postgresql/postgresql.conf",
      "scripts/ruby.rb",
      "scripts/setup.rb",
