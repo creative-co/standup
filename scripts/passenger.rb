@@ -2,9 +2,7 @@ Standup.script :node do
   def run
     scripts.ec2.open_port 80
     
-    install_gem 'passenger', '3.0.0'
-    
-    unless file_exists? '/opt/nginx/sbin/nginx'
+    if install_gem('passenger', '3.0.1') || !file_exists?('/opt/nginx/sbin/nginx')
       install_package 'libcurl4-openssl-dev'
       sudo 'passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx'
     end
