@@ -7,8 +7,8 @@ begin
     gem.name = 'standup'
     gem.summary = %Q{Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2}
     gem.email = 'ilia@flamefork.ru'
-    gem.homepage = 'http://github.com/Flamefork/standup'
-    gem.authors = ['Ilia Ablamonov', 'Cloud Castle Inc.']
+    gem.homepage = 'https://github.com/cloudcastle/standup'
+    gem.authors = ['Ilia Ablamonov', 'Artem Orlov', 'Cloud Castle Inc.']
     
     gem.add_dependency 'trollop', '>= 1.16'
     gem.add_dependency 'activesupport', '>= 3.0'

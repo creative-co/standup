@@ -31,23 +31,20 @@ module Standup
   def self.scripts
     unless class_variable_defined? :@@scripts
       @@scripts = {}
-      loaded = Set.new
-      [local_scripts_path, gem_scripts_path].each do |dir|
+      [gem_scripts_path, local_scripts_path].each do |dir|
         Dir.foreach dir do |name|
           next unless File.file? "#{dir}/#{name}"
           next unless name =~ /\.rb$/
-          next if loaded.include? name
           load "#{dir}/#{name}", true
-          loaded << name
         end if dir && File.exists?(dir)
       end
     end
     @@scripts
   end
-  
+
   def self.script type = :node, &block
     name = block.__file__.match(/([^\/]*)\.rb$/)[1]
-    superclass = case type
+    superclass = scripts[name] || case type
       when :node
         Scripts::Node
       when :local
@@ -57,10 +54,11 @@ module Standup
     end
     script_class = Class.new(superclass, &block)
     script_class.name = name
+    Standup::Scripts.send(:remove_const, name.camelize) if scripts[name]
     Standup::Scripts.const_set name.camelize, script_class
     scripts[name] = script_class
   end
-  
+
   def self.version
     File.read(File.expand_path('../../VERSION',  __FILE__)).strip
   end
