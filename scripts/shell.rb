@@ -7,8 +7,15 @@ Standup.script :node do
   
   def make_shell shell_command = ''
     return unless instance
-    command = "#{node.ssh_string} -t '#{shell_command}'"
+    command = "#{ssh_string} -t '#{shell_command}'"
     bright_p command
     Kernel.exec command
+  end
+
+  protected
+
+  def ssh_string
+    return '' unless instance
+    "ssh -i #{Standup::Settings.aws.keypair_file} #{params.extra_options} #{scripts.ec2.params.ssh_user}@#{instance.external_ip}"
   end
 end
