@@ -1,9 +1,10 @@
 Standup.script :node do
   self.default_params = {
       :rails_env => 'production',
-      :name => 'webapp'
+      :name => 'webapp',
+      :server_name => 'localhost'
   }
-  
+
   def run
     install_package 'git-core'
     install_gem 'bundler'
@@ -45,6 +46,14 @@ Standup.script :node do
     nil
   end
   
+  def server_names
+    params.server_names || params.server_name
+  end
+
+  def server_name
+    server_names.split(' ').first
+  end
+
   protected
   
   def ensure_github_access

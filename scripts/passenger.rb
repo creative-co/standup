@@ -1,6 +1,6 @@
 Standup.script :node do
   def run
-    scripts.ec2.open_port 80
+    scripts.ec2.open_port 80, 443
     
     if install_gem('passenger', '3.0.1') || !file_exists?('/opt/nginx/sbin/nginx')
       install_package 'libcurl4-openssl-dev'
