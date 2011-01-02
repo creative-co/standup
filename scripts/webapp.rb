@@ -2,7 +2,7 @@ Standup.script :node do
   self.default_params = {
       :rails_env => 'production',
       :name => 'webapp',
-      :server_name => 'localhost'
+      :server_name => '_'
   }
 
   def run
