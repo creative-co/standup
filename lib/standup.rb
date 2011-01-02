@@ -4,6 +4,7 @@ require 'AWS'
 require 'aws/s3'
 require 'net/ssh'
 require 'highline'
+require 'trollop'
 
 require 'standup/core_ext'
 require 'standup/settings'
@@ -61,5 +62,48 @@ module Standup
 
   def self.version
     File.read(File.expand_path('../../VERSION',  __FILE__)).strip
+  end
+  
+  def self.run_from_command_line
+    unless ENV['BUNDLE_GEMFILE']
+      Kernel.exec "bundle exec standup #{ARGV.join(' ')}"
+    end
+    
+    opt_parser = Trollop::Parser.new do
+      version "Standup #{Standup.version} (c) 2010 Ilia Ablamonov, Artem Orlov, Cloud Castle Inc."
+  
+      banner 'Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2.'
+      banner ''
+      banner 'Usage:'
+      banner '       standup [options] <script> [script arguments]'
+      banner ''
+      banner 'where <script> is one of the following:'
+      banner ''
+  
+      offset = Standup.scripts.keys.map(&:length).max + 2
+      Standup.scripts.keys.sort.each do |name|
+        banner "#{"%-#{offset}s" % name} #{Standup.scripts[name].description}"
+      end
+  
+      banner ''
+      banner "and [options] are:"
+      banner ''
+  
+      stop_on Standup.scripts.keys
+    end
+
+    Trollop::with_standard_exception_handling opt_parser do
+     opt_parser.parse ARGV
+     raise Trollop::HelpNeeded if ARGV.empty?
+    end
+
+    script_name = ARGV.shift
+    script = Standup.scripts[script_name]
+
+    if script
+      script.execute
+    else
+      opt_parser.die "unknown script #{script_name}", nil
+    end
   end
 end
