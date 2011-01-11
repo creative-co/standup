@@ -10,5 +10,6 @@ Standup.script :node do
     
     sudo 'touch /var/log/cron.log'
     sudo 'chmod 666 /var/log/cron.log'
+    #TODO: add setting localtime zone for server
   end
 end
