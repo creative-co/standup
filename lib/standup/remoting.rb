@@ -77,7 +77,7 @@ module Standup
     end
       
     def su_exec user, command
-      sudo "-u #{user} \"#{command.gsub /"/, '\"'}\""
+      sudo "-u #{user} #{command}"
     end
       
     def in_temp_dir &block
