@@ -29,7 +29,6 @@ Standup.script :node do
   end
   
   def load_command database, username = 'root', password = 'root'
-    username = 'root' if username == :local
     "mysql -u#{username} -p#{password} #{database}"
   end
 end
