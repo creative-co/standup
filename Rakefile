@@ -11,6 +11,7 @@ begin
     gem.authors = ['Ilia Ablamonov', 'Artem Orlov', 'Cloud Castle Inc.']
     
     gem.add_dependency 'trollop', '>= 1.16'
+    gem.add_dependency 'i18n', '>= 0.5.0'
     gem.add_dependency 'activesupport', '>= 3.0'
     gem.add_dependency 'settingslogic', '>= 2.0'
     gem.add_dependency 'amazon-ec2', '>= 0.9'
