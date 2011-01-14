@@ -26,7 +26,7 @@ module Standup
     
     def ssh_string
       return '' unless instance
-      "ssh -i #{Settings.aws.keypair_file} -q -o StrictHostKeyChecking=no #{scripts.ec2.params.ssh_user}@#{instance.external_ip}"
+      "ssh -i #{Settings.aws.keypair_file} -C -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null #{scripts.ec2.params.ssh_user}@#{instance.external_ip}"
     end
     
     def params

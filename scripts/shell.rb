@@ -16,6 +16,6 @@ Standup.script :node do
 
   def ssh_string
     return '' unless instance
-    "ssh -i #{Standup::Settings.aws.keypair_file} #{params.extra_options} #{scripts.ec2.params.ssh_user}@#{instance.external_ip}"
+    "ssh -i #{Standup::Settings.aws.keypair_file} -C -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null #{params.extra_options} #{scripts.ec2.params.ssh_user}@#{instance.external_ip}"
   end
 end
