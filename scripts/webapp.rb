@@ -68,7 +68,11 @@ Standup.script :node do
           install_gem 'bundler'
           exec 'bundle install'
         when :rake_gems
-          exec "RAILS_ENV=#{params.rails_env} rake gems:install"
+          cmd = "RAILS_ENV=#{params.rails_env} rake gems:install"
+          if exec(cmd).match(/Missing the Rails ([\d\.]+) gem/)
+            install_gem 'rails', $1
+            exec(cmd)
+          end
       end
     end
   end
