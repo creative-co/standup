@@ -5,6 +5,7 @@ Standup.script :node do
     in_dir scripts.webapp.app_path do
       sudo 'chown -R ubuntu:ubuntu .'
       exec 'git pull'
+      exec "git checkout #{scripts.webapp.params.git_branch}"
       sudo 'bundle install'
       sudo "RAILS_ENV=#{scripts.webapp.params.rails_env} rake db:migrate"
       sudo 'mkdir -p tmp'

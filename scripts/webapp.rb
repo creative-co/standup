@@ -2,7 +2,8 @@ Standup.script :node do
   self.default_params = {
       :rails_env => 'production',
       :name => 'webapp',
-      :server_name => '_'
+      :server_name => '_',
+      :git_branch => 'master'
   }
 
   def run
@@ -21,6 +22,10 @@ Standup.script :node do
     unless file_exists? "#{scripts.webapp.app_path}/.git"
       exec "rm -rf #{scripts.webapp.app_path}/*"
       exec "git clone git@github.com:#{github_repo}.git #{scripts.webapp.app_path}"
+    end
+    
+    in_dir(scripts.webapp.app_path) do
+      exec "git checkout #{params.git_branch}"
     end
 
     bootstrap_db
