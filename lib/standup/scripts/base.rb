@@ -67,8 +67,10 @@ module Standup
         script_description = description
         script_name = name
         opt_parser = Trollop::Parser.new do
-          banner script_description
-          banner ''
+          if script_description
+            banner script_description
+            banner ''
+          end
           banner 'Usage:'
           banner "       standup #{script_name} [options] #{arg_pattern}"
           banner ''
