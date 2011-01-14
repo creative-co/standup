@@ -4,14 +4,32 @@ Standup.script :node do
   def run
     in_dir scripts.webapp.app_path do
       sudo 'chown -R ubuntu:ubuntu .'
-      exec 'git pull'
-      exec "git checkout #{scripts.webapp.params.git_branch}"
-      sudo 'bundle install'
-      sudo "RAILS_ENV=#{scripts.webapp.params.rails_env} rake db:migrate"
-      sudo 'mkdir -p tmp'
+      
+      pull_changes
+      
+      update_webapp
+      
       sudo 'chown -R www-data:www-data .'
-      sudo 'touch tmp/restart.txt'
-      scripts.delayed_job.restart if scripts.setup.has_script? 'delayed_job'
+      
+      restart_webapp
     end
+  end
+  
+  protected
+  
+  def pull_changes
+    exec 'git pull'
+    exec "git checkout #{scripts.webapp.params.git_branch}"
+  end
+  
+  def update_webapp
+    scripts.webapp.install_gems
+    sudo "RAILS_ENV=#{scripts.webapp.params.rails_env} rake db:migrate"
+  end
+  
+  def restart_webapp
+    sudo 'mkdir -p tmp'
+    sudo 'touch tmp/restart.txt'
+    scripts.delayed_job.restart if scripts.setup.has_script? 'delayed_job'
   end
 end
