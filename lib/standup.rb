@@ -44,7 +44,7 @@ module Standup
   end
 
   def self.script type = :node, &block
-    name = block.__file__.match(/([^\/]*)\.rb$/)[1]
+    name = eval("__FILE__", block.binding).match(/([^\/]*)\.rb$/)[1]
     superclass = scripts[name] || case type
       when :node
         Scripts::Node
