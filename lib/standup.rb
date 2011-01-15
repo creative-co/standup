@@ -105,5 +105,7 @@ module Standup
     else
       opt_parser.die "unknown script #{script_name}", nil
     end
+  rescue Interrupt
+    exit
   end
 end

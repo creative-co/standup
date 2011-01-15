@@ -13,3 +13,9 @@ module Kernel
     `#{command} 2>&1`.tap{|result| puts result}
   end
 end
+
+module Enumerable
+  def map_to_hash map_class = Hash
+    map {|e| yield e}.inject(map_class.new) {|carry, e| carry.merge! e}
+  end
+end

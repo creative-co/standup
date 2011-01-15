@@ -7,6 +7,10 @@ Standup.script :node do
       :gem_manager => :bundler
   }
 
+  option :github_password,
+         :type => :password,
+         :description => 'GitHub password of project owner'
+
   def run
     install_package 'git-core'
     install_package params.additional_packages if params.additional_packages.present?
@@ -86,7 +90,7 @@ Standup.script :node do
       exec "ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' -C `hostname`"
     end
 
-    password = bright_ask("Enter GitGub password for user #{params.github_user}:", false)
+    password = get_option :github_password, "Enter GitGub password for user #{params.github_user}:"
 
     github_add_deploy_key params.github_user,
                           password,

@@ -20,20 +20,18 @@ module Standup
         bright_p "#{@node.name}:#{name}", HighLine::CYAN
       end
       
+      if Settings.nodes.keys.length > 1
+        option :nodes,
+               :type => :argument,
+               :description => 'node[,node]',
+               :variants => ['all'] + Settings.nodes.keys
+      end
+      
       def self.execute
-        all_nodes = Settings.nodes.keys
+        parse_options
         
-        nodes = if all_nodes.length > 1
-          node_args = argument('<node[,node]>', 'node', ['all'] + all_nodes).strip.split(',')
-          
-          if node_args.include? 'all'
-            all_nodes
-          else
-            node_args
-          end
-        else
-          all_nodes
-        end
+        nodes = get_option(:nodes).strip.split(',')
+        nodes = Settings.nodes.keys if !nodes || nodes.include?('all')
         
         run_on_nodes nodes
       end
