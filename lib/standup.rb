@@ -64,6 +64,17 @@ module Standup
     File.read(File.expand_path('../../VERSION',  __FILE__)).strip
   end
   
+  def self.run_script script_name, options = {}
+    script = Standup.scripts[script_name.to_s]
+
+    if script
+      script.set_options options
+      script.execute
+    else
+      raise "Unknown script #{script_name}"
+    end
+  end
+  
   def self.run_from_command_line
     unless ENV['BUNDLE_GEMFILE']
       Kernel.exec "bundle exec standup #{ARGV.join(' ')}"
@@ -101,9 +112,10 @@ module Standup
     script = Standup.scripts[script_name]
 
     if script
+      script.parse_options
       script.execute
     else
-      opt_parser.die "unknown script #{script_name}", nil
+      opt_parser.die "Unknown script #{script_name}", nil
     end
   rescue Interrupt
     exit

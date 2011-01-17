@@ -49,7 +49,6 @@ module Standup
       end
       
       def self.execute
-        parse_options
         new.run
       end
       
@@ -69,9 +68,7 @@ module Standup
         
         return opts[:value] if opts.has_key? :value
         
-        question ||= opts[:question]
-        
-        return nil unless question
+        question ||= opts[:question] || "Please enter value for option #{name}:"
         
         case opts[:type]
           when :password
@@ -79,9 +76,9 @@ module Standup
           when :flag
             bright_ask("#{question} [yes/NO]").strip.downcase == 'yes'
           when :argument
-            raise "Illegal state"
+            raise "Required argument #{name} missing"
           else
-            raise "Unkonown type #{opts[:type]}"
+            raise "Unknown type #{opts[:type]}"
         end
       end
       
@@ -104,7 +101,7 @@ module Standup
         script_description = description
         script_name = name
         
-        arguments = self.options.select{|_,o| o[:type] == :argument}
+        arguments = self.options.select{|_,o| o[:type] == :argument && !o.has_key?(:value)}
         options = self.options.select{|_,o| o[:type] != :argument}
         
         parser = Trollop::Parser.new do
@@ -141,7 +138,7 @@ module Standup
             argument = ARGV.shift or raise Trollop::HelpNeeded
             
             if opts[:variants] && !opts[:variants].include?(argument)
-              parser.die "unknown #{name} \"#{argument}\"", nil
+              parser.die "Unknown #{name} \"#{argument}\"", nil
             end
             
             opts[:value] = argument
