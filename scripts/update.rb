@@ -18,6 +18,7 @@ Standup.script :node do
   protected
   
   def pull_changes
+    exec 'git checkout HEAD .'
     exec 'git pull'
     exec "git checkout #{scripts.webapp.params.git_branch}"
   end
