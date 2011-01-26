@@ -65,7 +65,7 @@ module Standup
   end
   
   def self.run_from_command_line
-    unless ENV['BUNDLE_GEMFILE']
+    if File.exists?('Gemfile') && !ENV['BUNDLE_GEMFILE']
       Kernel.exec "bundle exec standup #{ARGV.join(' ')}"
     end
     
