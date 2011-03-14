@@ -1,6 +1,6 @@
 Standup.script :node do
   def run
-    scripts.redis.install_from_resque
+    scripts.redis.install_from_resque unless File.exists?("/etc/init.d/redis-server")
 
     path_to_resque_exec = "#{scripts.webapp.app_path}/script/resque"
     upload script_file('resque'),
