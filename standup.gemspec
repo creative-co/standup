@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{standup}
-  s.version = "0.3.18"
+  s.version = "0.3.19"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Artem Orlov", "Cloud Castle Inc."]
-  s.date = %q{2011-03-04}
+  s.date = %q{2011-03-14}
   s.default_executable = %q{standup}
   s.email = %q{ilia@flamefork.ru}
   s.executables = ["standup"]
@@ -65,6 +65,13 @@ Gem::Specification.new do |s|
     "scripts/postgresql/pg_hba.conf",
     "scripts/postgresql/postgresql.conf",
     "scripts/rake.rb",
+    "scripts/redis.rb",
+    "scripts/redis/redis-server",
+    "scripts/redis/redis.conf",
+    "scripts/redis/redis_monit.conf",
+    "scripts/resque.rb",
+    "scripts/resque/resque",
+    "scripts/resque/resque_monit.conf",
     "scripts/ruby.rb",
     "scripts/setup.rb",
     "scripts/shell.rb",
