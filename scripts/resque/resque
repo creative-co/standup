@@ -3,6 +3,6 @@
 if [  $1 = "ALL_QUEUES" ];then
     sudo -u www-data -E QUEUE=* VERBOSE=1 nohup rake environment resque:work& > log/resque_worker_$1_$2.log &
   else
-    sudo -u www-data -E QUEUE=$queueName VERBOSE=1 nohup rake environment resque:work& > log/resque_worker_$1_$2.log &
+    sudo -u www-data -E QUEUE=$1 VERBOSE=1 nohup rake environment resque:work& > log/resque_worker_$1_$2.log &
 fi
 echo $(($! - 1)) > tmp/pids/resque_$1_$2.pid
