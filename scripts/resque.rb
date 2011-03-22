@@ -1,6 +1,6 @@
 Standup.script :node do
   def run
-    scripts.redis.install_from_resque #unless File.exists?("/etc/init.d/redis-server")
+    scripts.redis.install_from_resque unless sudo('find /etc/init.d/redis-server1').match(/No such file or directory/).present?
 
     path_to_resque_exec = "#{scripts.webapp.app_path}/script/resque"
     upload script_file('resque'),
@@ -10,6 +10,7 @@ Standup.script :node do
     sudo "chmod +x #{path_to_resque_exec}"
 
     sudo "mkdir #{scripts.webapp.app_path}/tmp/pids"
+    sudo "chown www-data:www-data #{scripts.webapp.app_path}/tmp/pids"
     with_processed_file script_file('resque_monit.conf') do |file|
       scripts.monit.add_watch file
     end
