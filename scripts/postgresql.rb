@@ -1,20 +1,25 @@
 Standup.script :node do
   def run
-    install_packages 'postgresql-8.4 libpq-dev'
-  
+    install_packages 'python-software-properties'
+    sudo 'add-apt-repository ppa:pitti/postgresql'
+    sudo 'apt-get update'
+
+    #TODO execute sql /usr/share/postgresql/9.0/contrib/adminpack.sql
+    install_packages 'postgresql postgresql-contrib libpq-dev'
+
     upload script_file('pg_hba.conf'),
-           :to => '/etc/postgresql/8.4/main/pg_hba.conf',
+           :to => '/etc/postgresql/9.0/main/pg_hba.conf',
            :sudo => true
   
     upload script_file('postgresql.conf'),
-           :to => '/etc/postgresql/8.4/main/postgresql.conf',
+           :to => '/etc/postgresql/9.0/main/postgresql.conf',
            :sudo => true
   
     tune_kernel
   
-    sudo 'service postgresql-8.4 restart'
+    sudo 'service postgresql restart'
   end
-  
+
   def exec_sql sql, local = false
     command = "psql -c \"#{sql}\" -U postgres -w"
     if local
