@@ -4,9 +4,16 @@ Standup.script :node do
   end
 
   def install_from_resque
-    in_dir scripts.webapp.app_path do
+    in_dir "#{scripts.webapp.app_path}" do
+      sudo "git clone git://github.com/defunkt/resque.git"
+    end
+
+    in_dir "#{scripts.webapp.app_path}/resque" do
       sudo "rake redis:install"
     end
+
+    sudo "rm -fr #{scripts.webapp.app_path}/resque"
+
 
     upload script_file('redis.conf'),
            :to => '/etc/redis.conf',
