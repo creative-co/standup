@@ -12,7 +12,7 @@ Standup.script :node do
   protected
   
   def bucket
-    's3://standup-backup'
+    "s3://#{Standup::Settings.webapp.name}-#{node.name}-standup-backup"
   end
   
   def path_prefix
