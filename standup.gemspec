@@ -86,7 +86,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = %q{https://github.com/cloudcastle/standup}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
+  s.rubygems_version = %q{1.6.3}
   s.summary = %q{Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2}
 
   if s.respond_to? :specification_version then
