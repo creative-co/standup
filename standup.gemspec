@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Artem Orlov", "Cloud Castle Inc."]
-  s.date = %q{2011-05-03}
+  s.date = %q{2011-05-11}
   s.default_executable = %q{standup}
   s.email = %q{ilia@flamefork.ru}
   s.executables = ["standup"]
@@ -86,7 +86,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = %q{https://github.com/cloudcastle/standup}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.3}
+  s.rubygems_version = %q{1.6.2}
   s.summary = %q{Standup is an application deployment and infrastructure management tool for Rails and Amazon EC2}
 
   if s.respond_to? :specification_version then
