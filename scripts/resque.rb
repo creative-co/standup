@@ -22,6 +22,10 @@ Standup.script :node do
   end
 
   def restart
-    scripts.monit.restart_watch 'resque'
+    ((scripts.webapp.params.has_key?(:resque_queues) && scripts.webapp.params.resque_queues.presence) || {"ALL_QUEUES" => 1 }).each_pair do |queue_name, num_of_workers|
+      1.upto(num_of_workers)  do |num|
+        scripts.monit.restart_watch "resque_#{queue_name}_#{num}"
+      end
+     end
   end
 end
