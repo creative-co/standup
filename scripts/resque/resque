@@ -2,9 +2,8 @@
 export HOME="/home/<%= scripts.ec2.params.ssh_user %>"
 
 if [  $1 = "ALL_QUEUES" ];then
-    QUEUE=*
+    sudo -u www-data -E QUEUE=* VERBOSE=1 nohup rake environment resque:work >> log/resque_worker_$1_$2.log 2>&1 &
   else
-    QUEUE=$1
+    sudo -u www-data -E QUEUE=$1 VERBOSE=1 nohup rake environment resque:work >> log/resque_worker_$1_$2.log 2>&1 &
 fi
-
-sudo -u www-data -E QUEUE=$QUEUE VERBOSE=1 PIDFILE=tmp/pids/resque_$1_$2.pid nohup rake environment resque:work >> log/resque_worker_$1_$2.log 2>&1 &
+echo $(($! - 1)) > tmp/pids/resque_$1_$2.pid
