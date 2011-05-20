@@ -16,8 +16,13 @@ Standup.script :node do
            :sudo => true
   
     tune_kernel
-  
-    sudo 'service postgresql restart'
+
+     with_processed_file script_file('postgresql_monit.conf') do |file|
+      scripts.monit.add_watch file
+     end
+
+    restart
+#    sudo 'service postgresql restart'
   end
 
   def exec_sql sql, local = false
@@ -44,6 +49,10 @@ Standup.script :node do
   
   def load_command database, username = 'postgres', *args
     "psql #{database} -U #{username} -w"
+  end
+
+  def restart
+    scripts.monit.restart_watch 'postgresql'
   end
   
   protected
