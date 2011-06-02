@@ -80,6 +80,14 @@ Standup.script :node do
     end
   end
 
+  def under_user command
+    sudo %Q{su -l www-data --command "cd #{app_path} && #{command}"}
+  end
+
+  def gem_under_user command
+    under_user "RAILS_ENV=#{params.rails_env} bundle exec #{command}"
+  end
+
   protected
   
   def ensure_github_access

@@ -7,4 +7,4 @@ if [  $1 = "ALL_QUEUES" ];then
     QUEUE=$1
 fi
 
-sudo -u www-data -E QUEUE=$QUEUE VERBOSE=1 PIDFILE=tmp/pids/resque_$1_$2.pid nohup rake environment resque:work >> log/resque_worker_$1_$2.log 2>&1 &
+sudo su -l www-data --command "cd /opt/gs && QUEUE=$QUEUE VERBOSE=1 PIDFILE=tmp/pids/resque_$1_$2.pid nohup bundle exec rake environment resque:work >> log/resque_worker_$1_$2.log 2>&1 &"
