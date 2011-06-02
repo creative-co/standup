@@ -91,6 +91,7 @@ For example, if you want to add `rescue` to your configuration, you need to:
 ## To do
 
 - continue migration to rvm & bundler:
+  * use in_dir context inside webapp methods
   * change shall for www-data user or change /bin/sh symlink
   * put rvm initialization into /etc/profile
   * add RAILS_ENV to /etc/environment to skip passing it
