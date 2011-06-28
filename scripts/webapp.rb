@@ -107,19 +107,19 @@ Standup.script :node do
   protected
   
   def ensure_github_access
-    return unless exec('ssh -o StrictHostKeyChecking=no git@github.com') =~ /Permission denied \(publickey\)/
-
     unless file_exists? '~/.ssh/id_rsa'
       exec "ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' -C `hostname`"
     end
+    
+    while exec('ssh -o StrictHostKeyChecking=no git@github.com') =~ /Permission denied \(publickey\)/
+      password = bright_ask("Enter GitGub password for user #{params.github_user}:", false)
 
-    password = bright_ask("Enter GitGub password for user #{params.github_user}:", false)
-
-    github_add_deploy_key params.github_user,
-                          password,
-                          github_repo,
-                          exec('hostname').strip,
-                          exec('cat ~/.ssh/id_rsa.pub').strip
+      github_add_deploy_key params.github_user,
+                            password,
+                            github_repo,
+                            exec('hostname').strip,
+                            exec('cat ~/.ssh/id_rsa.pub').strip
+    end
   end
 
   def bootstrap_db
