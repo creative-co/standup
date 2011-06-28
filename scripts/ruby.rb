@@ -12,5 +12,7 @@ Standup.script :node do
 
     exec "rvm install #{params.version}"
     exec "rvm use #{params.version} --default"
+    
+    remoting.instance_variable_set :@rvm_installed, true
   end
 end
