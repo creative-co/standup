@@ -9,6 +9,7 @@ module Standup
       @user = @node.scripts.ec2.params.ssh_user
       @ssh = nil
       @path = nil
+      @rvm_installed = nil
     end
     
     def download *files
@@ -60,9 +61,11 @@ module Standup
       @path = old_path
       result
     end
-    
-    def exec command
+
+    def exec command, prefix = ''
       command  = @path ? "cd #{@path} && #{command}" : command
+      command = "/usr/local/rvm/bin/rvm-shell -c \"#{command}\"" if rvm_installed?
+      command = "#{prefix} #{command}"
       bright_p command
       ssh.exec! command do |ch, _, data|
         ch[:result] ||= ""
@@ -73,11 +76,11 @@ module Standup
     end
       
     def sudo command
-      exec "sudo #{command}"
+      exec command, 'sudo'
     end
       
     def su_exec user, command
-      sudo "-u #{user} #{command}"
+      exec command, "sudo -u #{user}"
     end
       
     def in_temp_dir &block
@@ -132,6 +135,10 @@ module Standup
       @ssh = nil
     end
     
+    def rvm_installed?
+      @rvm_installed ||= Standup::Settings.use_rvm && (ssh.exec!('/usr/local/rvm/bin/rvm -v') !~ /command not found|no such file or directory/i)
+    end
+
     protected
 
     def ssh

@@ -7,6 +7,10 @@ module Standup
       aws['account_id'].gsub!(/\D/, '')
       # keypair_file default to ~/.ssh/keypair_name.pem
       aws['keypair_file'] ||= "#{File.expand_path '~'}/.ssh/#{aws.keypair_name}.pem"
+
+      def use_rvm
+        self[:use_rvm] || false
+      end
     end
   rescue 
     require 'active_support/hash_with_indifferent_access'
