@@ -5,7 +5,7 @@ Standup.script :node do
       :server_name => '_',
       :git_branch => 'master',
       :gem_manager => :bundler,
-      :bootstrap_db => 'false'
+      :bootstrap_db => false
   }
 
   def run
@@ -31,8 +31,7 @@ Standup.script :node do
 
     install_gems
 
-    #TODO move boolean check to global stuff
-    bootstrap_db if params.bootstrap_db.match(/(true|t|yes|y|1)$/i) != nil
+    bootstrap_db if params.bootstrap_db
 
     sudo "chown -R www-data:www-data #{app_path}"
 
