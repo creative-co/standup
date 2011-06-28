@@ -11,6 +11,8 @@ ec2:
   image_id: ami-480df921 # Canonical Ubuntu 10.04, EBS boot, i386
   instance_type: m1.small
   ssh_user: ubuntu
+ruby:
+  version: 1.9.2
 webapp:
   name: 
   github_user: 

@@ -136,7 +136,7 @@ module Standup
     end
     
     def rvm_installed?
-      @rvm_installed ||= Standup::Settings.use_rvm && (ssh.exec!('/usr/local/rvm/bin/rvm -v') !~ /command not found|no such file or directory/i)
+      @rvm_installed ||= (ssh.exec!('/usr/local/rvm/bin/rvm -v') !~ /command not found|no such file or directory/i)
     end
 
     protected
