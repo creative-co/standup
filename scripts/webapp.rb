@@ -5,29 +5,28 @@ Standup.script :node do
       :server_name => '_',
       :git_branch => 'master',
       :gem_manager => :bundler,
-      :bootstrap_db => false
+      :bootstrap_db => false,
+      :app_subdir => ''
   }
 
   def run
     install_package 'git-core'
     install_package params.additional_packages if params.additional_packages.present?
 
-    unless file_exists? app_path
-      sudo "mkdir -p #{app_path}"
+    unless file_exists? project_path
+      sudo "mkdir -p #{project_path}"
     end
 
-    sudo "chown -R ubuntu:ubuntu #{app_path}"
+    sudo "chown -R ubuntu:ubuntu #{project_path}"
 
     ensure_github_access
 
-    unless file_exists? "#{app_path}/.git"
-      exec "rm -rf #{app_path}/*"
-      exec "git clone git@github.com:#{github_repo}.git #{app_path}"
+    unless file_exists? "#{project_path}/.git"
+      exec "rm -rf #{project_path}/*"
+      exec "git clone git@github.com:#{github_repo}.git #{project_path}"
     end
     
-    in_dir app_path do
-      exec "git checkout #{params.git_branch}"
-    end
+    checkout_branch
 
     install_gems
 
@@ -40,10 +39,14 @@ Standup.script :node do
     end
   end
 
-  def app_path
+  def project_path
     "/opt/#{params.name}"
   end
   
+  def app_path
+    "#{project_path}#{params.app_subdir}"
+  end
+
   def db_name
     "#{params.name}_#{params.rails_env}"
   end
@@ -76,6 +79,20 @@ Standup.script :node do
             exec cmd
           end
       end
+    end
+  end
+
+  def checkout_branch
+    in_dir project_path do
+      exec "git checkout #{params.git_branch}"
+    end
+  end
+
+  def restart
+    in_dir app_path do
+      sudo 'mkdir -p tmp'
+      sudo 'touch tmp/restart.txt'
+      scripts.delayed_job.restart if scripts.setup.has_script? 'delayed_job'
     end
   end
 
