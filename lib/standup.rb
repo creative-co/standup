@@ -13,6 +13,7 @@ require 'standup/remoting'
 require 'standup/scripts/base'
 require 'standup/scripts/node'
 require 'standup/node'
+require 'standup/version'
 
 module Standup
   module Scripts; end
@@ -60,10 +61,6 @@ module Standup
     scripts[name] = script_class
   end
 
-  def self.version
-    File.read(File.expand_path('../../VERSION',  __FILE__)).strip
-  end
-  
   def self.run_from_command_line
     if File.exists?('Gemfile') && !ENV['BUNDLE_GEMFILE']
       Kernel.exec "bundle exec standup #{ARGV.join(' ')}"

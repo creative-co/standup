@@ -44,7 +44,7 @@ Standup.script :node do
   end
   
   def app_path
-    "#{project_path}#{params.app_subdir}"
+    File.join(project_path, params.app_subdir)
   end
 
   def db_name

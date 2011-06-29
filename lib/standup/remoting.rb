@@ -136,7 +136,7 @@ module Standup
     end
     
     def rvm_installed?
-      @rvm_installed ||= file_exists?('/usr/local/rvm/bin/rvm')
+      @rvm_installed ||= ssh.exec!("if [ -e /usr/local/rvm/bin/rvm ]; then echo 'true'; fi") == "true\n"
     end
 
     protected
