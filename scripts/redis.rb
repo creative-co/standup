@@ -1,35 +1,30 @@
 Standup.script :node do
+  REDIS_VERSION = "2.2.8"
+
   def run
-    raise "Please call resque install instead"
-  end
+    file_name = "redis-#{REDIS_VERSION}"
 
-  def install_from_resque
-    in_dir "#{scripts.webapp.app_path}" do
-      sudo "git clone git://github.com/defunkt/resque.git"
+    #TODO check version, specify it in standup config file
+    unless installed?
+      in_temp_dir do
+        exec "wget http://redis.googlecode.com/files/#{file_name}.tar.gz"
+        exec "tar xvfz #{file_name}.tar.gz"
+        exec "cd #{file_name} && sudo mkdir /opt/redis"
+        exec "cd #{file_name} && sudo make PREFIX=/opt/redis install"
+      end
+
+      sudo "ln -s /opt/redis/bin/redis-server /usr/local/bin/redis-server"
+      sudo "ln -s /opt/redis/bin/redis-cli /usr/local/bin/redis-cli"
     end
 
-    in_dir "#{scripts.webapp.app_path}/resque" do
-      sudo "rake redis:install"
-    end
-
-    sudo "rm -fr #{scripts.webapp.app_path}/resque"
-
-
-    upload script_file('redis.conf'),
-           :to => '/etc/redis.conf',
-           :sudo => true
     with_processed_file script_file('redis.conf') do |file|
-      upload file, :to => '/etc/redis.conf',
-             :sudo => true
+      upload file, :to => '/etc/redis.conf', :sudo => true
     end
-    upload script_file('redis-server'),
-           :to => '/etc/init.d/redis-server',
-           :sudo => true
+
+    upload script_file('redis-server'), :to => '/etc/init.d/redis-server', :sudo => true
 
     sudo 'chmod +x /etc/init.d/redis-server'
     sudo '/usr/sbin/update-rc.d -f redis-server defaults'
-    sudo 'service redis-server stop'
-    sudo 'service redis-server start'
 
     with_processed_file script_file('redis_monit.conf') do |file|
       scripts.monit.add_watch file
@@ -38,7 +33,7 @@ Standup.script :node do
     restart
   end
 
-  def restart
-    scripts.monit.restart_watch 'redis'
+  def installed?
+    sudo('find /usr/local/bin/redis-server').match(/No such file or directory/).blank?
   end
 end
