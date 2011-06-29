@@ -90,8 +90,6 @@ For example, if you want to add `rescue` to your configuration, you need to:
 
 ## To do
 
-- continue migration to rvm & bundler:
-  * add RAILS_ENV to /etc/environment to skip passing it
 - **?** Script sequences: rework default script as script sequence
 
 

@@ -30,6 +30,11 @@ Standup.script :node do
 
     sudo "chown -R www-data:www-data #{app_path}"
 
+    remote_update '/etc/environment',
+                  "RAILS_ENV=#{params.rails_env}\n",
+                  :delimiter => '# standup script rails_env',
+                  :sudo => true
+
     install_gems
 
     bootstrap_db if params.bootstrap_db
