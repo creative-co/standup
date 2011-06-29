@@ -55,7 +55,9 @@ module Standup
 
     def with_context new_context = {}
       old_context = @context.dup
-      yield(@context = @context.merge(new_context)).tap { @context = old_context }
+      yield(@context = @context.merge(new_context).merge(:prefix => "#{old_context[:prefix]} #{new_context[:prefix]}")).tap do
+        @context = old_context
+      end
     end
 
     def in_dir path, &block
@@ -67,18 +69,18 @@ module Standup
       with_context(:user => user, &block)
     end
 
-    def use_bundler &block
-      with_context(:prefix => "RAILS_ENV=#{scripts.webapp.params.rails_env} bundle exec", &block)
+    def with_prefix prefix, &block
+      with_context(:prefix => prefix, &block)
     end
 
-    def exec command
-      command  = @path ? "cd #{@path} && #{command}" : command
-      command = "/usr/local/rvm/bin/rvm-shell -c \"#{command}\"" if rvm_installed?
-      command = "#{@context[:prefix]} #{command}" if @context[:prefix].present?
+    def exec command, context = @context
+      command = "#{context[:prefix].strip} #{command}"            if context[:prefix].present?
+      command = "cd #{context[:path]} && #{command}"              if context[:path].present?
+      command = "/usr/local/rvm/bin/rvm-shell -c \"#{command}\""  if rvm_installed?
 
-      if @context[:user].present?
-        command = "sudo -u #{@context[:user]} #{command}"
-      elsif @context[:sudo]
+      if context[:user].present?
+        command = "sudo -u #{context[:user]} #{command}"
+      elsif context[:sudo]
         command = "sudo #{command}"
       end
 

@@ -13,6 +13,8 @@ Standup.script :node do
     exec "rvm install #{version}"
     exec "rvm use #{version} --default"
 
+    sudo 'usermod -a -G rvm www-data'
+
     remoting.instance_variable_set :@rvm_installed, true
   end
 

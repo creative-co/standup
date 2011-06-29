@@ -25,17 +25,23 @@ Standup.script :node do
       exec "rm -rf #{project_path}/*"
       exec "git clone git@github.com:#{github_repo}.git #{project_path}"
     end
-    
+
     checkout_branch
+
+    sudo "chown -R www-data:www-data #{app_path}"
 
     install_gems
 
     bootstrap_db if params.bootstrap_db
 
-    sudo "chown -R www-data:www-data #{app_path}"
-
     with_processed_file script_file('webapp.conf') do |file|
       scripts.passenger.add_server_conf file, "#{params.name}.conf"
+    end
+  end
+
+  def with_environment
+    with_context(:user => 'www-data', :path => app_path, :prefix => "RAILS_ENV=#{params.rails_env} bundle exec") do
+      yield
     end
   end
 
@@ -66,7 +72,7 @@ Standup.script :node do
   end
   
   def install_gems
-    in_dir app_path do
+    with_context(:user => 'www-data', :path => app_path) do
       case params.gem_manager.to_sym
         when :bundler
           install_gem 'bundler'
@@ -93,6 +99,7 @@ Standup.script :node do
       sudo 'mkdir -p tmp'
       sudo 'touch tmp/restart.txt'
       scripts.delayed_job.restart if scripts.setup.has_script? 'delayed_job'
+      scripts.resque.restart      if scripts.setup.has_script? 'resque'
     end
   end
 
@@ -116,9 +123,9 @@ Standup.script :node do
 
   def bootstrap_db
     if db.create_database db_name
-      in_dir app_path do
-        exec "RAILS_ENV=#{params.rails_env} rake db:schema:load"
-        exec "RAILS_ENV=#{params.rails_env} rake db:seed"
+      with_environment do
+        exec "rake db:schema:load"
+        exec "rake db:seed"
       end
     end
   end
