@@ -8,8 +8,8 @@ module Standup
       @keypair_file = Settings.aws.keypair_file
       @user = @node.scripts.ec2.params.ssh_user
       @ssh = nil
-      @path = nil
       @rvm_installed = nil
+      @context = {}
     end
     
     def download *files
@@ -52,20 +52,36 @@ module Standup
              :to => file,
              :sudo => opts[:sudo]
     end
-    
-    def in_dir path
-      raise ArgumentError, 'Only absolute paths allowed' unless path[0,1] == '/'
-      old_path = @path
-      @path = path
-      result = yield path
-      @path = old_path
-      result
+
+    def with_context new_context = {}
+      old_context = @context.dup
+      yield(@context = @context.merge(new_context)).tap { @context = old_context }
     end
 
-    def exec command, prefix = ''
+    def in_dir path, &block
+      raise ArgumentError, 'Only absolute paths allowed' unless path[0,1] == '/'
+      with_context(:path => path, &block)
+    end
+
+    def as_user user, &block
+      with_context(:user => user, &block)
+    end
+
+    def use_bundler &block
+      with_context(:prefix => "RAILS_ENV=#{scripts.webapp.params.rails_env} bundle exec", &block)
+    end
+
+    def exec command
       command  = @path ? "cd #{@path} && #{command}" : command
       command = "/usr/local/rvm/bin/rvm-shell -c \"#{command}\"" if rvm_installed?
-      command = "#{prefix} #{command}"
+      command = "#{@context[:prefix]} #{command}" if @context[:prefix].present?
+
+      if @context[:user].present?
+        command = "sudo -u #{@context[:user]} #{command}"
+      elsif @context[:sudo]
+        command = "sudo #{command}"
+      end
+
       bright_p command
       ssh.exec! command do |ch, _, data|
         ch[:result] ||= ""
@@ -75,12 +91,15 @@ module Standup
       end
     end
       
-    def sudo command
-      exec command, 'sudo'
+    def sudo command = nil, &block
+      block = Proc.new { exec command } unless block_given?
+      with_context(:sudo => true, &block)
     end
       
     def su_exec user, command
-      exec command, "sudo -u #{user}"
+      as_user user do
+        exec command
+      end
     end
       
     def in_temp_dir &block
