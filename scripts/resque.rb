@@ -1,6 +1,6 @@
 Standup.script :node do
   def run
-    scripts.redis.install_from_resque if  sudo('find /etc/init.d/redis-server').match(/No such file or directory/).present?
+    scripts.redis.run unless scripts.redis.installed?
 
     path_to_resque_exec = "#{scripts.webapp.app_path}/script/resque"
     with_processed_file script_file('resque') do |file|
