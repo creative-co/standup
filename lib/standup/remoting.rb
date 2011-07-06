@@ -75,17 +75,31 @@ module Standup
 
     def raw_exec command
       bright_p command
+
       result = ''
-      ssh.shell do |sh|
-        sh.on_process_run do |_, process|
-          process.on_output do |_, data|
-            result << data
-            print data
-            STDOUT.flush
-          end
-        end
-        sh.execute command
+
+      collect_output = lambda do |data|
+        result << data
+        print(data)
+        STDOUT.flush
       end
+
+      main_channel = ssh.open_channel do |ch|
+        ch.exec("bash -l") do |ch2, _|
+          ch2.on_data { |_, data| collect_output.call(data) }
+
+          ch2.on_extended_data { |_, _, data| collect_output.call(data) }
+
+          ch2.send_data "export TERM=vt100\n"
+
+          ch2.send_data "#{command}\n"
+
+          ch2.send_data "exit\n"
+        end
+      end
+
+      main_channel.wait
+
       result
     end
 
