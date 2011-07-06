@@ -16,6 +16,14 @@ Standup.script :node do
     end
   end
 
+  def info
+    @rvminfo ||= YAML.load(exec('rvm info')).values.first
+    {
+        :gem_dir => "#{@rvminfo['homes']['gem']}/gems",
+        :bin_ruby => @rvminfo['binaries']['ruby']
+    }
+  end
+
   def version
     @version ||= begin
       files = Dir['**/.rvmrc']

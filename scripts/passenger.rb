@@ -9,10 +9,12 @@ Standup.script :node do
     
     sudo 'mkdir -p /opt/nginx/conf/servers'
     
-    upload script_file('nginx.conf'),
-           :to =>'/opt/nginx/conf/nginx.conf',
-           :sudo => true
-    
+    with_processed_file script_file('nginx.conf') do |file|
+      upload file,
+             :to =>'/opt/nginx/conf/nginx.conf',
+             :sudo => true
+    end
+
     upload script_file('nginx'),
            :to =>'/etc/init.d/nginx',
            :sudo => true
