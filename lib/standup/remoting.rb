@@ -73,6 +73,16 @@ module Standup
       with_context(:prefix => prefix, &block)
     end
 
+    def raw_exec command
+      bright_p command
+      ssh.exec! command do |ch, _, data|
+        ch[:result] ||= ""
+        ch[:result] << data
+        print data
+        STDOUT.flush
+      end
+    end
+
     def exec command, context = @context
       command = "#{context[:prefix].strip} #{command}"            if context[:prefix].present?
       command = "cd #{context[:path]} && #{command}"              if context[:path].present?
@@ -84,13 +94,7 @@ module Standup
         command = "sudo #{command}"
       end
 
-      bright_p command
-      ssh.exec! command do |ch, _, data|
-        ch[:result] ||= ""
-        ch[:result] << data
-        print data
-        STDOUT.flush
-      end
+      raw_exec command
     end
       
     def sudo command = nil, &block
@@ -112,10 +116,10 @@ module Standup
       result
     end
       
-    def file_exists? path
-      exec("if [ -e #{path} ]; then echo 'true'; fi") == "true\n"
+    def file_exists? path, raw = false
+      send(:"#{raw ? 'raw_' : ''}exec", "if [ -e #{path} ]; then echo 'true'; fi") == "true\n"
     end
-      
+
     def install_packages packages, opts = {}
       input = opts[:input] ? "echo \"#{opts[:input].join("\n")}\" | sudo " : ''
       sudo "#{input}apt-get -qqy install #{packages}"
@@ -157,7 +161,10 @@ module Standup
     end
     
     def rvm_installed?
-      @rvm_installed ||= ssh.exec!("if [ -e /usr/local/rvm/bin/rvm ]; then echo 'true'; fi") == "true\n"
+      unless instance_variable_defined? :@rvm_installed
+        @rvm_installed = file_exists?('/usr/local/rvm/bin/rvm', true)
+      end
+      @rvm_installed
     end
 
     protected

@@ -1,17 +1,17 @@
 Standup.script :node do
   def run
-    return if remoting.rvm_installed?
+    install_packages 'build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev'
     
-    install_package 'git-core'
-    
-    sudo 'bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)'
-    
-    exec "rvm install #{version}"
-    exec "rvm use #{version} --default"
-    
-    sudo 'usermod -a -G rvm www-data'
-    
-    remoting.instance_variable_set :@rvm_installed, true
+    unless remoting.rvm_installed?
+      sudo 'bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)'
+      sudo 'usermod -a -G rvm www-data'
+      remoting.instance_variable_set :@rvm_installed, true
+    end
+
+    unless exec('rvm list')[version]
+      exec "rvm install #{version}"
+      exec "rvm use #{version} --default"
+    end
   end
 
   def version
