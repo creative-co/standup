@@ -8,7 +8,6 @@ module Standup
       @keypair_file = Settings.aws.keypair_file
       @user = @node.scripts.ec2.params.ssh_user
       @ssh = nil
-      @rvm_installed = nil
       @context = {}
     end
     
@@ -140,8 +139,8 @@ module Standup
       result
     end
       
-    def file_exists? path, raw = false
-      send(:"#{raw ? 'raw_' : ''}exec", "if [ -e #{path} ]; then echo 'true'; fi") == "true\n"
+    def file_exists? path
+      exec("if [ -e #{path} ]; then echo 'true'; fi") =~ /true/
     end
 
     def install_packages packages, opts = {}
@@ -186,7 +185,7 @@ module Standup
     
     def rvm_installed?
       unless instance_variable_defined? :@rvm_installed
-        @rvm_installed = file_exists?('/usr/local/rvm/bin/rvm', true)
+        @rvm_installed = !!(raw_exec('which rvm') =~ /rvm/)
       end
       @rvm_installed
     end
