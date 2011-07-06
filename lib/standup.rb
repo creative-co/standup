@@ -3,6 +3,7 @@ require 'settingslogic'
 require 'AWS'
 require 'aws/s3'
 require 'net/ssh'
+require 'net/ssh/shell'
 require 'highline'
 require 'trollop'
 

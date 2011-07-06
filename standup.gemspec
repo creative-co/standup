@@ -26,5 +26,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'amazon-ec2', '>= 0.9'
   s.add_dependency 'aws-s3', '>= 0.5'
   s.add_dependency 'net-ssh', '>= 2.0'
+  s.add_dependency 'net-ssh-shell', '>= 0.2.0'
   s.add_dependency 'highline', '>= 1.5.2'
 end

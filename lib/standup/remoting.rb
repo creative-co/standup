@@ -75,18 +75,24 @@ module Standup
 
     def raw_exec command
       bright_p command
-      ssh.exec! command do |ch, _, data|
-        ch[:result] ||= ""
-        ch[:result] << data
-        print data
-        STDOUT.flush
+      result = ''
+      ssh.shell do |sh|
+        sh.on_process_run do |_, process|
+          process.on_output do |_, data|
+            result << data
+            print data
+            STDOUT.flush
+          end
+        end
+        sh.execute command
       end
+      result
     end
 
     def exec command, context = @context
       command = "#{context[:prefix].strip} #{command}"            if context[:prefix].present?
       command = "cd #{context[:path]} && #{command}"              if context[:path].present?
-      command = "/usr/local/rvm/bin/rvm-shell -c \"#{command}\""  if rvm_installed?
+      command = "#{shell_command} -c \"#{command.gsub(/"/, '\"')}\""
 
       if context[:user].present?
         command = "sudo -u #{context[:user]} #{command}"
@@ -96,7 +102,11 @@ module Standup
 
       raw_exec command
     end
-      
+
+    def shell_command
+      rvm_installed? ? 'rvm-shell' : 'bash'
+    end
+
     def sudo command = nil, &block
       block = Proc.new { exec command } unless block_given?
       with_context(:sudo => true, &block)
@@ -173,7 +183,8 @@ module Standup
       @ssh ||= Net::SSH.start @host, @user,
                               :keys => @keypair_file,
                               :paranoid => false,
-                              :timeout => 10
+                              :timeout => 10,
+                              :compression => 'zlib'
     end
     
     def rsync source, destination, sudo
