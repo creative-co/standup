@@ -1,4 +1,4 @@
-klnblkblkbklblkcdStandup.script :node do
+Standup.script :node do
   def run
     exec "s3cmd mb #{bucket}"
     
