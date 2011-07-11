@@ -39,6 +39,7 @@ Standup.script :node do
 
     bootstrap_db if params.bootstrap_db
 
+    #TODO replace rvm ruby with wrapper!!!
     with_processed_file script_file('webapp.conf') do |file|
       scripts.passenger.add_server_conf file, "#{params.name}.conf"
     end
