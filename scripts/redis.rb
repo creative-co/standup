@@ -36,4 +36,8 @@ Standup.script :node do
   def installed?
     sudo('find /usr/local/bin/redis-server').match(/No such file or directory/).blank?
   end
+
+  def restart
+    scripts.monit.restart_watch 'redis'
+  end
 end
