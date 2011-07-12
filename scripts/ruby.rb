@@ -12,7 +12,11 @@ Standup.script :node do
       install_packages 'build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev'
 
       sudo "rvm install #{version}"
-      exec "rvm use #{version} --default"
+      sudo "rvm use #{version} --default"
+
+      upload script_file('gemrc'),
+             :to => '/etc/gemrc',
+             :sudo => true
     end
   end
 
@@ -20,7 +24,8 @@ Standup.script :node do
     @rvminfo ||= YAML.load(exec('rvm info')).values.first
     {
         :gem_dir => "#{@rvminfo['homes']['gem']}/gems",
-        :bin_ruby => @rvminfo['binaries']['ruby']
+        :bin_ruby => @rvminfo['binaries']['ruby'],
+        :wrapper => "#{@rvminfo['homes']['ruby'].gsub('/rubies/', '/wrappers/')}/ruby"
     }
   end
 
