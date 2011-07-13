@@ -12,7 +12,7 @@ module Standup
                :to => :@node
     
       delegate :download, :upload, :remote_update, :file_exists?, :install_package, :install_packages, :install_gem, :update_cron,
-               :with_context, :exec, :sudo, :su_exec, :in_dir, :in_temp_dir, :as_user, :with_prefix,
+               :with_context, :exec, :sudo, :su_exec, :in_dir, :in_temp_dir, :as_user, :with_prefix, :remote_command,
                :to => :remoting
     
       attr_accessor :node

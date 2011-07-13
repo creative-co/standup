@@ -3,7 +3,7 @@ Standup.script :node do
   
   def run
     scripts.webapp.with_environment do
-      exec 'rails console'
+      scripts.shell.make_shell(remote_command('rails console'))
     end
   end
 end

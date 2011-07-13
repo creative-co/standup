@@ -52,11 +52,10 @@ module Standup
              :sudo => opts[:sudo]
     end
 
-    def with_context new_context = {}
+    def with_context new_context = {}, replace = false
       old_context = @context.dup
-      yield(@context = @context.merge(new_context).merge(:prefix => "#{old_context[:prefix]} #{new_context[:prefix]}")).tap do
-        @context = old_context
-      end
+      @context = replace ? new_context : @context.merge(new_context).merge(:prefix => "#{old_context[:prefix]} #{new_context[:prefix]}")
+      yield(@context).tap { @context = old_context }
     end
 
     def in_dir path, &block
@@ -98,22 +97,27 @@ module Standup
       end
 
       main_channel.wait
+      main_channel.close
 
       result
     end
 
-    def exec command, context = @context
-      command = "#{context[:prefix].strip} #{command}"            if context[:prefix].present?
-      command = "cd #{context[:path]} && #{command}"              if context[:path].present?
+    def remote_command command
+      command = "#{@context[:prefix].strip} #{command}" if @context[:prefix].present?
+      command = "cd #{@context[:path]} && #{command}"   if @context[:path].present?
       command = "#{shell_command} -c \"#{command.gsub(/"/, '\"')}\""
 
-      if context[:user].present?
-        command = "sudo -u #{context[:user]} #{command}"
-      elsif context[:sudo]
+      if @context[:user].present?
+        command = "sudo -u #{@context[:user]} #{command}"
+      elsif @context[:sudo]
         command = "sudo #{command}"
       end
 
-      raw_exec command
+      command
+    end
+
+    def exec command, context = {}
+      with_context(context) { raw_exec(remote_command(command)) }
     end
 
     def shell_command
