@@ -91,7 +91,7 @@ For example, if you want to add `rescue` to your configuration, you need to:
 ## To do
 
 - **?** Script sequences: rework default script as script sequence
-
+- change shell for www-data user
 
 ## Copyright
 
