@@ -60,7 +60,9 @@ module Standup
 
     def in_dir path, &block
       raise ArgumentError, 'Only absolute paths allowed' unless path[0,1] == '/'
-      with_context(:path => path, &block)
+      with_context(:path => path) do |context|
+        block.call(path, context)
+      end
     end
 
     def as_user user, &block

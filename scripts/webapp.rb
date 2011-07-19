@@ -60,7 +60,7 @@ Standup.script :node do
   end
 
   def db_name
-    "#{params.name}_#{params.rails_env}"
+    params.db_name || "#{params.name}_#{params.rails_env}"
   end
   
   def db
