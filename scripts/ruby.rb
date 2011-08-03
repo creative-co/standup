@@ -3,7 +3,9 @@ Standup.script :node do
     unless remoting.rvm_installed?
       install_package 'git-core'
       sudo 'bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)'
+      sudo 'usermod -a -G rvm ubuntu'
       sudo 'usermod -a -G rvm www-data'
+      sudo 'cd /usr/local/bin && sudo ln -s /usr/local/rvm/bin/rvm-shell'
       exec 'source /usr/local/rvm/scripts/rvm'
       remoting.instance_variable_set :@rvm_installed, true
     end
