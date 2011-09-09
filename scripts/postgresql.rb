@@ -4,15 +4,15 @@ Standup.script :node do
     sudo 'add-apt-repository ppa:pitti/postgresql'
     sudo 'apt-get update'
 
-    #TODO execute sql /usr/share/postgresql/9.0/contrib/adminpack.sql
-    install_packages 'postgresql postgresql-contrib libpq-dev'
+    #TODO execute sql /usr/share/postgresql/9.1/contrib/adminpack.sql
+    install_packages 'postgresql-9.1 postgresql-contrib-9.1 libpq-dev'
 
     upload script_file('pg_hba.conf'),
-           :to => '/etc/postgresql/9.0/main/pg_hba.conf',
+           :to => '/etc/postgresql/9.1/main/pg_hba.conf',
            :sudo => true
   
     upload script_file('postgresql.conf'),
-           :to => '/etc/postgresql/9.0/main/postgresql.conf',
+           :to => '/etc/postgresql/9.1/main/postgresql.conf',
            :sudo => true
   
     tune_kernel
@@ -22,7 +22,6 @@ Standup.script :node do
      end
 
     restart
-#    sudo 'service postgresql restart'
   end
 
   def exec_sql sql, local = false
@@ -35,11 +34,11 @@ Standup.script :node do
   end
   
   def create_database name, local = false
-    if exec_sql("select * from pg_database where datname = '#{name}'", local) =~ /1 row/
-      false
-    else
+    if exec_sql("select * from pg_database where datname = '#{name}'", local) =~ /\(0 rows\)/
       exec_sql "create database #{name}", local
       true
+    else
+      false
     end
   end
   
