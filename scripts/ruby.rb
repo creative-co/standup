@@ -6,6 +6,7 @@ Standup.script :node do
       sudo 'usermod -a -G rvm ubuntu'
       sudo 'usermod -a -G rvm www-data'
       sudo 'cd /usr/local/bin && sudo ln -s /usr/local/rvm/bin/rvm-shell'
+      upload script_file('rvmrc'), :to => '/etc/rvmrc', :sudo => true
       exec 'source /usr/local/rvm/scripts/rvm'
       remoting.instance_variable_set :@rvm_installed, true
     end

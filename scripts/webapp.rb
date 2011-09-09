@@ -116,7 +116,7 @@ Standup.script :node do
       exec "ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' -C `hostname`"
     end
     
-    while exec('ssh -o StrictHostKeyChecking=no git@github.com') =~ /Permission denied \(publickey\)/
+    while exec('ssh -o StrictHostKeyChecking=no git@github.com', nil, 10) =~ /Permission denied \(publickey\)/
       password = bright_ask("Enter GitGub password for user #{params.github_user}:", false)
 
       github_add_deploy_key params.github_user,

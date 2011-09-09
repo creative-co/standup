@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'timeout'
 
 module Standup
   class Remoting
@@ -52,7 +53,8 @@ module Standup
              :sudo => opts[:sudo]
     end
 
-    def with_context new_context = {}, replace = false
+    def with_context new_context, replace = false
+      new_context ||= {}
       old_context = @context.dup
       @context = replace ? new_context : @context.merge(new_context).merge(:prefix => "#{old_context[:prefix]} #{new_context[:prefix]}")
       yield(@context).tap { @context = old_context }
@@ -73,7 +75,7 @@ module Standup
       with_context(:prefix => prefix, &block)
     end
 
-    def raw_exec command
+    def raw_exec command, timeout_sec = nil
       bright_p command
 
       result = ''
@@ -98,7 +100,16 @@ module Standup
         end
       end
 
-      main_channel.wait
+      if timeout_sec
+        begin
+          timeout(timeout_sec) { main_channel.wait }
+        rescue Timeout::Error
+          puts "Timeout of #{timeout_sec} happens, connection is closing."
+        end
+      else
+        main_channel.wait
+      end
+
       main_channel.close
 
       result
@@ -118,8 +129,8 @@ module Standup
       command
     end
 
-    def exec command, context = {}
-      with_context(context) { raw_exec(remote_command(command)) }
+    def exec command, context = nil, timeout_sec = nil
+      with_context(context) { raw_exec(remote_command(command), timeout_sec) }
     end
 
     def shell_command
@@ -185,7 +196,7 @@ module Standup
     end
     
     def close
-      @ssh.close if @ssh
+      @ssh.shutdown! if @ssh
       @ssh = nil
     end
     
