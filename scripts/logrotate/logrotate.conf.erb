@@ -1,0 +1,42 @@
+<% common_props = <<END
+    daily
+    rotate 30
+
+    missingok
+    notifempty
+
+    compress
+    delaycompress
+END %>
+
+<% if scripts.setup.has_script? 'passenger' -%>
+  /opt/nginx/logs/*.log {
+  <%= common_props %>
+      sharedscripts
+      postrotate
+          test ! -f /var/run/nginx.pid || kill -USR1 'cat /var/run/nginx.pid'
+      endscript
+  }
+<% end %>
+
+<% if scripts.setup.has_script? 'webapp' -%>
+  <%= scripts.webapp.app_path %>log/<%= scripts.webapp.params.rails_env %>.log {
+  <%= common_props %>
+      postrotate
+          touch <%= scripts.webapp.app_path %>tmp/restart.txt
+      endscript
+  }
+<% end %>
+
+<% if scripts.setup.has_script?('resque') && scripts.webapp.params.has_key?(:resque_queues) %>
+  <% scripts.webapp.params.resque_queues.each_pair do |resque_name, num_of_workers| %>
+    <% 1.upto(num_of_workers) do |num| %>
+        <%= scripts.webapp.app_path %>log/<%= "resque_worker_#{resque_name}_#{num}" %>.log {
+        <%= common_props %>
+            postrotate
+                /usr/sbin/monit restart <%= "resque_#{resque_name}_#{num}" %>
+            endscript
+        }
+    <% end %>
+  <% end %>
+<% end %>
