@@ -5,7 +5,6 @@ Standup.script :node do
       :server_name => '_',
       :git_branch => 'master',
       :gem_manager => :bundler,
-      :bootstrap_db => false,
       :app_subdir => ''
   }
 
@@ -37,7 +36,7 @@ Standup.script :node do
 
     install_gems
 
-    bootstrap_db if params.bootstrap_db
+    bootstrap_db
 
     #TODO replace rvm ruby with wrapper!!!
     with_processed_file script_file('webapp.conf') do |file|

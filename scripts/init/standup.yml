@@ -19,7 +19,6 @@ webapp:
   name: 
   github_user: 
   github_repo: 
-  bootstrap_db: true
 
 # Nodes and their script params
 nodes:

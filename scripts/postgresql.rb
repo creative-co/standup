@@ -35,11 +35,11 @@ Standup.script :node do
   end
   
   def create_database name, local = false
-    if exec_sql("select * from pg_database where datname = '#{name}'", local) =~ /1 row/
-      false
-    else
+    if exec_sql("select * from pg_database where datname = '#{name}'", local) =~ /\(0 rows\)/
       exec_sql "create database #{name}", local
       true
+    else
+      false
     end
   end
   
