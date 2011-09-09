@@ -2,6 +2,7 @@ Standup.script :node do
   def run
     sudo 'apt-get -qq update'
     install_packages 'build-essential libreadline5-dev mc s3cmd'
+    sudo 'locale-gen ru_RU.UTF-8'
     
     with_processed_file script_file('s3cfg') do |file|
       upload file,
