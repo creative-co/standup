@@ -80,14 +80,14 @@ Standup.script :node do
     with_context(:user => 'www-data', :path => app_path) do
       case params.gem_manager.to_sym
         when :bundler
-          install_gem 'bundler'
-          exec 'bundle install'
+          install_gem 'bundler', '1.0.18'
+          sudo 'bundle install'
         when :rake_gems
           cmd = "RAILS_ENV=#{params.rails_env} rake gems:install"
-          output = exec cmd
+          output = sudo cmd
           if output.match(/Missing the Rails ([\d\.]+) gem/) || output.match(/RubyGem version error: rails\([\d\.]+ not = ([\d\.]+)\)/)
             install_gem 'rails', $1
-            exec cmd
+            sudo cmd
           end
       end
     end

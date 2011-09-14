@@ -1,5 +1,5 @@
 module Standup
-  VERSION = "0.5.14"
+  VERSION = "0.6.0"
 
   def self.version
     VERSION

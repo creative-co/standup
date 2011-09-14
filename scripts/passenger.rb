@@ -1,15 +1,19 @@
 Standup.script :node do
+  self.default_params = {
+      :version => '3.0.9'
+  }
+
   def run
     scripts.ec2.open_port 80, 443
 
-    if install_gem('passenger', '3.0.8') || !file_exists?('/opt/nginx/sbin/nginx')
+    if install_gem('passenger', params.version) || !file_exists?('/opt/nginx/sbin/nginx')
       install_package 'libcurl4-openssl-dev'
       sudo 'passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx'
     end
 
     sudo 'mkdir -p /opt/nginx/conf/servers'
 
-    with_processed_file script_file('nginx.conf') do |file|
+    with_processed_file script_file('nginx.conf.erb') do |file|
       upload file,
              :to =>'/opt/nginx/conf/nginx.conf',
              :sudo => true

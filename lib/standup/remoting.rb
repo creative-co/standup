@@ -118,12 +118,12 @@ module Standup
     def remote_command command
       command = "#{@context[:prefix].strip} #{command}" if @context[:prefix].present?
       command = "cd #{@context[:path]} && #{command}"   if @context[:path].present?
-      command = "#{shell_command} -c \"#{command.gsub(/"/, '\"')}\""
+      command = "bash -c \"#{command.gsub(/"/, '\"')}\""
 
-      if @context[:user].present?
-        command = "sudo -u #{@context[:user]} #{command}"
-      elsif @context[:sudo]
+      if @context[:sudo]
         command = "sudo #{command}"
+      elsif @context[:user].present?
+        command = "sudo -u #{@context[:user]} #{command}"
       end
 
       command
@@ -131,10 +131,6 @@ module Standup
 
     def exec command, context = nil, timeout_sec = nil
       with_context(context) { raw_exec(remote_command(command), timeout_sec) }
-    end
-
-    def shell_command
-      rvm_installed? ? 'rvm-shell' : 'bash'
     end
 
     def sudo command = nil, &block
@@ -152,7 +148,7 @@ module Standup
       tmp_dirname = "/tmp/standup_tmp_#{rand 10000}"
       exec "mkdir -m 777 #{tmp_dirname}"
       result = in_dir tmp_dirname, &block
-      exec "rm -rf #{tmp_dirname}"
+      sudo "rm -rf #{tmp_dirname}"
       result
     end
       
@@ -200,13 +196,6 @@ module Standup
       @ssh = nil
     end
     
-    def rvm_installed?
-      unless instance_variable_defined? :@rvm_installed
-        @rvm_installed = !!(raw_exec('which rvm') =~ /rvm/)
-      end
-      @rvm_installed
-    end
-
     protected
 
     def ssh
