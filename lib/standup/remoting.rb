@@ -143,12 +143,17 @@ module Standup
         exec command
       end
     end
-      
+
     def in_temp_dir &block
       tmp_dirname = "/tmp/standup_tmp_#{rand 10000}"
       exec "mkdir -m 777 #{tmp_dirname}"
-      result = in_dir tmp_dirname, &block
+      
+      result = in_dir tmp_dirname do
+        block.call tmp_dirname
+      end
+      
       sudo "rm -rf #{tmp_dirname}"
+      
       result
     end
       
