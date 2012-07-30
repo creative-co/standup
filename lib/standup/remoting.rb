@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'timeout'
 
 module Standup
   class Remoting
@@ -8,7 +9,7 @@ module Standup
       @keypair_file = Settings.aws.keypair_file
       @user = @node.scripts.ec2.params.ssh_user
       @ssh = nil
-      @path = nil
+      @context = {}
     end
     
     def download *files
@@ -51,47 +52,115 @@ module Standup
              :to => file,
              :sudo => opts[:sudo]
     end
-    
-    def in_dir path
-      raise ArgumentError, 'Only absolute paths allowed' unless path[0,1] == '/'
-      old_path = @path
-      @path = path
-      result = yield path
-      @path = old_path
-      result
+
+    def with_context new_context, replace = false
+      new_context ||= {}
+      old_context = @context.dup
+      @context = replace ? new_context : @context.merge(new_context).merge(:prefix => "#{old_context[:prefix]} #{new_context[:prefix]}")
+      yield(@context).tap { @context = old_context }
     end
-    
-    def exec command
-      command  = @path ? "cd #{@path} && #{command}" : command
-      bright_p command
-      ssh.exec! command do |ch, _, data|
-        ch[:result] ||= ""
-        ch[:result] << data
-        print data
-        STDOUT.flush
+
+    def in_dir path, &block
+      raise ArgumentError, 'Only absolute paths allowed' unless path[0,1] == '/'
+      with_context(:path => path) do |context|
+        block.call(path, context)
       end
     end
-      
-    def sudo command
-      exec "sudo #{command}"
+
+    def as_user user, &block
+      with_context(:user => user, &block)
+    end
+
+    def with_prefix prefix, &block
+      with_context(:prefix => prefix, &block)
+    end
+
+    def raw_exec command, timeout_sec = nil
+      bright_p command
+
+      result = ''
+
+      collect_output = lambda do |data|
+        result << data
+        print(data)
+        STDOUT.flush
+      end
+
+      main_channel = ssh.open_channel do |ch|
+        ch.exec("bash -l") do |ch2, _|
+          ch2.on_data { |_, data| collect_output.call(data) }
+
+          ch2.on_extended_data { |_, _, data| collect_output.call(data) }
+
+          ch2.send_data "export TERM=vt100\n"
+
+          ch2.send_data "#{command}\n"
+
+          ch2.send_data "exit\n"
+        end
+      end
+
+      if timeout_sec
+        begin
+          timeout(timeout_sec) { main_channel.wait }
+        rescue Timeout::Error
+          puts "Timeout of #{timeout_sec} happens, connection is closing."
+        end
+      else
+        main_channel.wait
+      end
+
+      main_channel.close
+
+      result
+    end
+
+    def remote_command command
+      command = "#{@context[:prefix].strip} #{command}" if @context[:prefix].present?
+      command = "cd #{@context[:path]} && #{command}"   if @context[:path].present?
+      command = "bash -c \"#{command.gsub(/"/, '\"')}\""
+
+      if @context[:sudo]
+        command = "sudo #{command}"
+      elsif @context[:user].present?
+        command = "sudo -u #{@context[:user]} #{command}"
+      end
+
+      command
+    end
+
+    def exec command, context = nil, timeout_sec = nil
+      with_context(context) { raw_exec(remote_command(command), timeout_sec) }
+    end
+
+    def sudo command = nil, &block
+      block = Proc.new { exec command } unless block_given?
+      with_context(:sudo => true, &block)
     end
       
     def su_exec user, command
-      sudo "-u #{user} #{command}"
+      as_user user do
+        exec command
+      end
     end
-      
+
     def in_temp_dir &block
       tmp_dirname = "/tmp/standup_tmp_#{rand 10000}"
       exec "mkdir -m 777 #{tmp_dirname}"
-      result = in_dir tmp_dirname, &block
-      exec "rm -rf #{tmp_dirname}"
+      
+      result = in_dir tmp_dirname do
+        block.call tmp_dirname
+      end
+      
+      sudo "rm -rf #{tmp_dirname}"
+      
       result
     end
       
     def file_exists? path
-      exec("if [ -e #{path} ]; then echo 'true'; fi") == "true\n"
+      exec("if [ -e #{path} ]; then echo 'true'; fi") =~ /true/
     end
-      
+
     def install_packages packages, opts = {}
       input = opts[:input] ? "echo \"#{opts[:input].join("\n")}\" | sudo " : ''
       sudo "#{input}apt-get -qqy install #{packages}"
@@ -128,7 +197,7 @@ module Standup
     end
     
     def close
-      @ssh.close if @ssh
+      @ssh.shutdown! if @ssh
       @ssh = nil
     end
     
@@ -138,7 +207,8 @@ module Standup
       @ssh ||= Net::SSH.start @host, @user,
                               :keys => @keypair_file,
                               :paranoid => false,
-                              :timeout => 10
+                              :timeout => 10,
+                              :compression => 'zlib'
     end
     
     def rsync source, destination, sudo

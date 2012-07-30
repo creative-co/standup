@@ -1,0 +1,11 @@
+#!/bin/bash
+export HOME="/home/<%= scripts.ec2.params.ssh_user %>"
+
+if [  $1 = "ALL_QUEUES" ];then
+    QUEUE=*
+  else
+    QUEUE=$1
+fi
+
+<% cmd = "cd #{scripts.webapp.app_path} && RAILS_ENV=#{scripts.webapp.params.rails_env} QUEUE=$QUEUE VERBOSE=1 PIDFILE=tmp/pids/resque_$1_$2.pid nohup bundle exec rake environment resque:work >> log/resque_worker_$1_$2.log 2>&1 &" %>
+<%= with_context({:user => 'www-data'}) { remote_command(cmd) } %>

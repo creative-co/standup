@@ -1,20 +1,29 @@
 Standup.script :node do
   def run
-    install_packages 'postgresql-8.4 libpq-dev'
-  
+    install_packages 'python-software-properties'
+    sudo 'add-apt-repository ppa:pitti/postgresql'
+    sudo 'apt-get update'
+
+    #TODO execute sql /usr/share/postgresql/9.1/contrib/adminpack.sql
+    install_packages 'postgresql-9.1 postgresql-contrib-9.1 libpq-dev'
+
     upload script_file('pg_hba.conf'),
-           :to => '/etc/postgresql/8.4/main/pg_hba.conf',
+           :to => '/etc/postgresql/9.1/main/pg_hba.conf',
            :sudo => true
   
     upload script_file('postgresql.conf'),
-           :to => '/etc/postgresql/8.4/main/postgresql.conf',
+           :to => '/etc/postgresql/9.1/main/postgresql.conf',
            :sudo => true
   
     tune_kernel
-  
-    sudo 'service postgresql-8.4 restart'
+
+     with_processed_file script_file('postgresql_monit.conf') do |file|
+      scripts.monit.add_watch file
+     end
+
+    restart
   end
-  
+
   def exec_sql sql, local = false
     command = "psql -c \"#{sql}\" -U postgres -w"
     if local
@@ -25,11 +34,11 @@ Standup.script :node do
   end
   
   def create_database name, local = false
-    if exec_sql("select * from pg_database where datname = '#{name}'", local) =~ /1 row/
-      false
-    else
+    if exec_sql("select * from pg_database where datname = '#{name}'", local) =~ /\(0 rows\)/
       exec_sql "create database #{name}", local
       true
+    else
+      false
     end
   end
   
@@ -39,6 +48,10 @@ Standup.script :node do
   
   def load_command database, username = 'postgres', *args
     "psql #{database} -U #{username} -w"
+  end
+
+  def restart
+    scripts.monit.restart_watch 'postgresql'
   end
   
   protected

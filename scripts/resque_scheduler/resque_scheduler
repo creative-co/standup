@@ -1,0 +1,4 @@
+#!/bin/bash
+export HOME="/home/<%= scripts.ec2.params.ssh_user %>"
+
+sudo -u www-data /bin/bash -c "cd <%= scripts.webapp.app_path%> && RAILS_ENV=<%= scripts.webapp.params.rails_env%> VERBOSE=1 PIDFILE=<%= scripts.webapp.app_path%>/tmp/pids/resque_scheduler.pid BACKGROUND=yes bundle exec rake resque:scheduler --trace  >> <%= scripts.webapp.app_path%>/log/resque_scheduler.log 2>&1 &"

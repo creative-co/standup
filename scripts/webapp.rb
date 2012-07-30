@@ -4,7 +4,8 @@ Standup.script :node do
       :name => 'webapp',
       :server_name => '_',
       :git_branch => 'master',
-      :gem_manager => :bundler
+      :gem_manager => :bundler,
+      :app_subdir => ''
   }
 
   option :github_password,
@@ -15,40 +16,54 @@ Standup.script :node do
     install_package 'git-core'
     install_package params.additional_packages if params.additional_packages.present?
 
-    unless file_exists? app_path
-      sudo "mkdir -p #{app_path}"
+    unless file_exists? project_path
+      sudo "mkdir -p #{project_path}"
     end
 
-    sudo "chown -R ubuntu:ubuntu #{app_path}"
+    sudo "chown -R ubuntu:ubuntu #{project_path}"
 
     ensure_github_access
 
-    unless file_exists? "#{app_path}/.git"
-      exec "rm -rf #{app_path}/*"
-      exec "git clone git@github.com:#{github_repo}.git #{app_path}"
+    unless file_exists? "#{project_path}/.git"
+      exec "rm -rf #{project_path}/*"
+      exec "git clone git@github.com:#{github_repo}.git #{project_path}"
     end
-    
-    in_dir app_path do
-      exec "git checkout #{params.git_branch}"
-    end
+
+    checkout_branch
+
+    sudo "chown -R www-data:www-data #{app_path}"
+
+    remote_update '/etc/environment',
+                  "RAILS_ENV=#{params.rails_env}\n",
+                  :delimiter => '# standup script rails_env',
+                  :sudo => true
 
     install_gems
 
     bootstrap_db
 
-    sudo "chown -R www-data:www-data #{app_path}"
-
+    #TODO replace rvm ruby with wrapper!!!
     with_processed_file script_file('webapp.conf') do |file|
       scripts.passenger.add_server_conf file, "#{params.name}.conf"
     end
   end
 
-  def app_path
+  def with_environment
+    with_context(:user => 'www-data', :path => app_path, :prefix => "RAILS_ENV=#{params.rails_env} bundle exec") do
+      yield
+    end
+  end
+
+  def project_path
     "/opt/#{params.name}"
   end
   
+  def app_path
+    File.join(project_path, params.app_subdir)
+  end
+
   def db_name
-    "#{params.name}_#{params.rails_env}"
+    params.db_name || "#{params.name}_#{params.rails_env}"
   end
   
   def db
@@ -66,30 +81,43 @@ Standup.script :node do
   end
   
   def install_gems
-    in_dir app_path do
+    with_context(:user => 'www-data', :path => app_path) do
       case params.gem_manager.to_sym
         when :bundler
-          install_gem 'bundler'
-          exec 'bundle install'
+          install_gem 'bundler', '1.0.21'
+          sudo 'bundle install --deployment'
         when :rake_gems
           cmd = "RAILS_ENV=#{params.rails_env} rake gems:install"
-          if exec(cmd).match(/Missing the Rails ([\d\.]+) gem/)
+          output = sudo cmd
+          if output.match(/Missing the Rails ([\d\.]+) gem/) || output.match(/RubyGem version error: rails\([\d\.]+ not = ([\d\.]+)\)/)
             install_gem 'rails', $1
-            exec(cmd)
+            sudo cmd
           end
       end
+    end
+  end
+
+  def checkout_branch
+    in_dir project_path do
+      exec "git checkout #{params.git_branch}"
+    end
+  end
+
+  def restart
+    in_dir app_path do
+      sudo 'mkdir -p tmp'
+      sudo 'touch tmp/restart.txt'
+      scripts.delayed_job.restart if scripts.setup.has_script? 'delayed_job'
+      scripts.resque.restart      if scripts.setup.has_script? 'resque'
     end
   end
 
   protected
   
   def ensure_github_access
-    return unless exec('ssh -o StrictHostKeyChecking=no git@github.com') =~ /Permission denied \(publickey\)/
-
     unless file_exists? '~/.ssh/id_rsa'
       exec "ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' -C `hostname`"
     end
-
     password = get_option :github_password, "Enter GitGub password for user #{params.github_user}:"
 
     github_add_deploy_key params.github_user,
@@ -101,9 +129,9 @@ Standup.script :node do
 
   def bootstrap_db
     if db.create_database db_name
-      in_dir app_path do
-        exec "RAILS_ENV=#{params.rails_env} rake db:schema:load"
-        exec "RAILS_ENV=#{params.rails_env} rake db:seed"
+      with_environment do
+        exec "rake db:schema:load"
+        exec "rake db:seed"
       end
     end
   end

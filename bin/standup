@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+if defined?(Bundler)
+  Bundler.require(:deploy)
+end
+
 require 'rubygems'
 require 'standup'
 
