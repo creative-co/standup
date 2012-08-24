@@ -1,0 +1,22 @@
+# Amazon Web Services credentials
+aws:
+  account_id: <%= ENV['ACCOUNT_ID'] %>
+  access_key_id: <%= ENV['ACCESS_KEY_ID'] %>
+  secret_access_key: <%= ENV['SECRET_ACCESS_KEY'] %>
+  keypair_name: <%= ENV['KEYPAIR_NAME'] %>
+  availability_zone: us-east-1a
+
+# Global script params
+ec2:
+  image_id: ami-480df921 # Canonical Ubuntu 10.04, EBS boot, i386
+  instance_type: m1.small
+  ssh_user: ubuntu
+
+webapp:
+  name: standup_test
+  github_user: Flamefork
+  github_repo: cloudcastle/standup
+
+# Nodes and their script params
+nodes:
+  standup_testapp:

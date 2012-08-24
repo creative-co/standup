@@ -1,0 +1,8 @@
+<h1>Todos:</h1>
+<ul>
+  <% @todos.each do |todo| %>
+      <li class="<%= todo.done? ? 'done' : '' -%>"><%= todo.text %></li>
+  <% end %>
+</ul>
+
+<h2>So, it works!</h2>

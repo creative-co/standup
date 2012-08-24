@@ -1,0 +1,18 @@
+defaults: &defaults
+  adapter: postgresql
+  encoding: utf8
+  pool: 5
+  username: postgres
+  password: postgres
+
+development:
+  <<: *defaults
+  database: standup_test_development
+
+test:
+  <<: *defaults
+  database: standup_test_test
+
+production:
+  <<: *defaults
+  database: standup_test_production
