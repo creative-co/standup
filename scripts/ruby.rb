@@ -10,7 +10,7 @@ Standup.script :node do
     
     install_ruby_build
     
-    sudo "ruby-build #{version} /usr/local" 
+    sudo "CONFIGURE_OPTS='--disable-install-rdoc' ruby-build #{version} /usr/local" 
   end
   
   def install_ruby_build
