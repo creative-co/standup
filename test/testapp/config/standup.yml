@@ -9,13 +9,17 @@ aws:
 # Global script params
 ec2:
   image_id: ami-480df921 # Canonical Ubuntu 10.04, EBS boot, i386
-  instance_type: m1.small
+  instance_type: c1.medium
   ssh_user: ubuntu
 
 webapp:
   name: standup_test
+  app_subdir: test/testapp
   github_user: Flamefork
   github_repo: cloudcastle/standup
+  
+setup:
+  ec2 basics monit ruby postgresql passenger webapp db_backup update
 
 # Nodes and their script params
 nodes:
