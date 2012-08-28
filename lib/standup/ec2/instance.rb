@@ -73,7 +73,7 @@ module Standup
                :internal_ip => item.privateIpAddress,
                :state => item.instanceState.name.to_sym,
                :architecture => item.architecture,
-               :security_groups => ritem.groupSet.item.map{|i| SecurityGroup.new(i.groupId)}
+               :security_groups => ritem.groupSet ? ritem.groupSet.item.map{|i| SecurityGroup.new(i.groupId)} : []
       end
     end
   end
