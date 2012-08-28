@@ -1,6 +1,9 @@
 Standup.script :node do
   def run
-    install_package 'mysql-server-5.1', :input => ['root', 'root', 'root']
+    install_package 'debconf-utils'
+    sudo 'echo "mysql-server-5.1 mysql-server/root_password       password root" | debconf-set-selections'
+    sudo 'echo "mysql-server-5.1 mysql-server/root_password_again password root" | debconf-set-selections'
+    install_package 'mysql-server-5.1'
     install_package 'libmysqlclient-dev'
     
     # todo: tune performance
