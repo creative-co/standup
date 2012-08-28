@@ -1,0 +1,11 @@
+#!/bin/sh
+
+pushd ./test/testapp
+
+export ACCOUNT_ID=
+export ACCESS_KEY_ID=
+export SECRET_ACCESS_KEY=
+export KEYPAIR_NAME=
+bundle exec standup $1
+
+popd
