@@ -54,7 +54,8 @@ module Standup
 
       def self.api
         @@api ||= AWS::EC2::Base.new :access_key_id => Settings.aws.access_key_id,
-                                     :secret_access_key => Settings.aws.secret_access_key
+                                     :secret_access_key => Settings.aws.secret_access_key,
+                                     :server => "ec2.#{Settings.aws.availability_zone[/\w+-\w+-\d+/]}.amazonaws.com"
       end
     end
   end
