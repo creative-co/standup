@@ -140,13 +140,8 @@ Standup.script :node do
   end
 
   def github_add_deploy_key user, password, repo, title, key
-    require 'net/http'
-    Net::HTTP.start 'github.com' do |http|
-      req = Net::HTTP::Post.new "/api/v2/json/repos/key/#{repo}/add"
-      req.form_data = {'title' => title, 'key' => key}
-      req.basic_auth user, password
-      response = http.request req
-      response.is_a? Net::HTTPSuccess
-    end
+    require 'octokit'
+    client = Octokit::Client.new(:login => user, :password => password)
+    client.add_deploy_key(repo, title, key)
   end
 end
