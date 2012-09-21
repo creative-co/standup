@@ -10,5 +10,7 @@ if File.exists?('config/standup.yml')
     end
   end
 else
-  Standup.const_set :Settings, ActiveSupport::HashWithIndifferentAccess.new('nodes' => {})
+  module Standup
+    Settings = ActiveSupport::HashWithIndifferentAccess.new('nodes' => {})
+  end
 end
