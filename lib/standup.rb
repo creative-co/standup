@@ -29,11 +29,15 @@ module Standup
   def self.local_scripts_path
     File.expand_path('config/standup') rescue nil
   end
+
+  def self.conf_scripts_path
+    File.expand_path("#{Settings.conf_scripts_path}/config/standup") rescue nil
+  end
   
   def self.scripts
     unless class_variable_defined? :@@scripts
       @@scripts = {}
-      [gem_scripts_path, local_scripts_path].each do |dir|
+      [gem_scripts_path, conf_scripts_path, local_scripts_path].each do |dir|
         Dir.foreach dir do |name|
           next unless File.file? "#{dir}/#{name}"
           next unless name =~ /\.rb$/
