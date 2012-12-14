@@ -37,7 +37,7 @@ module Standup
   def self.scripts
     unless class_variable_defined? :@@scripts
       @@scripts = {}
-      [gem_scripts_path, conf_scripts_path, local_scripts_path].each do |dir|
+      [gem_scripts_path, conf_scripts_path, local_scripts_path].compact.each do |dir|
         Dir.foreach dir do |name|
           next unless File.file? "#{dir}/#{name}"
           next unless name =~ /\.rb$/

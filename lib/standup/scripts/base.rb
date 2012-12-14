@@ -26,7 +26,7 @@ module Standup
       end
 
       def script_file filename
-        [Standup.local_scripts_path, Standup.conf_scripts_path, Standup.gem_scripts_path].each do |dir|
+        [Standup.local_scripts_path, Standup.conf_scripts_path, Standup.gem_scripts_path].compact.each do |dir|
           next unless dir
           path = File.expand_path("#{name}/#{filename}", dir)
           return path if File.exists? path
