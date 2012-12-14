@@ -15,6 +15,9 @@ ec2:
 shell:
   extra_options: -L 5433:localhost:5432
 
+#if you want to change the root folder of the 'config/standup' use
+#conf_scripts_path: ../
+
 webapp:
   name: 
   github_user: 
